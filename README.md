@@ -2,7 +2,7 @@
 
 Python script which automates the process of playing/grinding the Flight Rising coliseum. Uses `PyAutoGUI` to take screenshots of the current screen, locate buttons, and analyze HP values.
 
-Only tested in Python3 on a windows 7 machine, firefox quantum. In practice OS and browser shouldn't matter too much, as all you really need is to take screenshots. PyAutoGUI works on linux, mac, and windows. I don't know if PyAutoGUI works in Python2.
+Only tested in Python3 on a windows 7 machine, firefox quantum. In practice OS and browser shouldn't matter too much, as all you really need is to take screenshots. PyAutoGUI works on linux, mac, and windows.
 
 `AutoColi.py` contains the main battle logic. `Battle.py` contains helper functions. `Units.py` contains the classes Foe and Dragon. 
 
@@ -24,7 +24,7 @@ Only tested in Python3 on a windows 7 machine, firefox quantum. In practice OS a
 
 # Usage
 
-Get some level 25 dragons. I don't know or care how.
+Get some level 25 dragons. I don't know or care how. Follow one of the physical glass cannon builds (STR focus with Eliminate).
 
 In `AutoColi.py`, find the following lines:
 
@@ -38,7 +38,15 @@ configDragons = [
 
 This defines your dragons (from top to bottom on the battle screen). Change role between "grinder" and "trainee". The second parameter is the dragon's hotkey for Eliminate. Trainees should not set an Eliminate hotkey. 
 
-Teplace each of the images in the directory with a screenshot from _your_ browser. The screenshots included in the repo are only examples. They were taken on a Windows 7 laptop, Firefox Quantum, at 80% zoom level. They may not look the same across browsers or machines.
+```numBattles = 20
+venueIndex = 15
+```
+
+This defines the number of battles, and the index (0-indexed) of the Coliseum venue you want to battle in. This is set to 15 (Ghostlight Ruins) by default (best place for exalt training IMO).
+
+Ideally, you should set your browser zoom level so the FR coliseum displays with no blurriness. (For me, this was Firefox 56 on 80% zoom, as 100% zoom was too big for some reason.) Browsers may display the coliseum canvas differently, but the actual elements of the coliseum canvas should look the same. 
+
+If stuff isn't working, try replacing each of the images in the directory with a screenshot from _your_ browser. 
 
 Invoke `python3 AutoColi.py` to start the script. Ideally you should split-screen so that your battle window and your Python window are both visible.
 

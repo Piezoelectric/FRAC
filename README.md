@@ -24,6 +24,8 @@ Only tested in Python3 on a windows 7 machine, firefox quantum. In practice OS a
 
 # Usage
 
+## Config
+
 Get some level 25 dragons. I don't know or care how. Follow one of the physical glass cannon builds (STR focus with Eliminate).
 
 In `AutoColi.py`, find the following lines:
@@ -38,7 +40,8 @@ configDragons = [
 
 This defines your dragons (from top to bottom on the battle screen). Change role between "grinder" and "trainee". The second parameter is the dragon's hotkey for Eliminate. Trainees should not set an Eliminate hotkey. 
 
-```numBattles = 20
+```
+numBattles = 20
 venueIndex = 15
 ```
 
@@ -47,6 +50,8 @@ This defines the number of battles, and the index (0-indexed) of the Coliseum ve
 Ideally, you should set your browser zoom level so the FR coliseum displays with no blurriness. (For me, this was Firefox 56 on 80% zoom, as 100% zoom was too big for some reason.) Browsers may display the coliseum canvas differently, but the actual elements of the coliseum canvas should look the same. 
 
 If stuff isn't working, try replacing each of the images in the directory with a screenshot from _your_ browser. 
+
+## Running
 
 Navigate to the coliseum's main menu page (the Monster Battle button should be visible). Then invoke `python3 AutoColi.py` to start the script. Ideally you should split-screen so that your battle window and your Python window are both visible.
 

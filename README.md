@@ -13,10 +13,10 @@ Only tested in Python3 on a windows 7 machine, firefox quantum. In practice OS a
 **Current Version 10 / 2018-06-16** 
 * Expanded venue select to 2nd page
 * Supports exalt-grinding (previously only material grinding)
- * New battle logic which handles trainee/grinder distinction
- * "role" field added to Dragons
- * Trainees only defend with d key
- * Trainees may be KOd and battle will continue
+    * New battle logic which handles trainee/grinder distinction
+    * "role" field added to Dragons
+    * Trainees only defend with d key
+    * Trainees may be KOd and battle will continue
 * Added print method to Dragons
 * Fixed `Battle.getReadyDragon()` function so it doesnt search entire screen
 * Added new parameter to `Battle.loadBattle()`, which takes coordinates of "Fight On" button. Previously the script would search for the Fight On button everytime, though the actual button would not change positions. By re-using known coordinates of this button, the next battle is loaded faster
@@ -48,7 +48,7 @@ Ideally, you should set your browser zoom level so the FR coliseum displays with
 
 If stuff isn't working, try replacing each of the images in the directory with a screenshot from _your_ browser. 
 
-Invoke `python3 AutoColi.py` to start the script. Ideally you should split-screen so that your battle window and your Python window are both visible.
+Navigate to the coliseum's main menu page (the Monster Battle button should be visible). Then invoke `python3 AutoColi.py` to start the script. Ideally you should split-screen so that your battle window and your Python window are both visible.
 
 Note that Coliseum captchas are not automatically solved. Upon seeing a captcha, the script will pause to wait for you to solve it. You'll need to manually intervene every 10 or so battles. But hey, it's much better than manually doing all 10 battles.
 

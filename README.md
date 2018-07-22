@@ -54,6 +54,7 @@ Sometimes I see people on the forums say "Coli grinding isn't so bad, I usually 
 
 **Version 11 / 2018-07-22**
 * Changed "lowHP" battle ending to use f5 refresh key (previously it used image detection to find the browser refresh button)
+* Changed Foe HP threshhold default to 0.95
 
 **Version 10 / 2018-06-16** 
 * Expanded venue select to 2nd page

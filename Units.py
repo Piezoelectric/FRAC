@@ -32,7 +32,7 @@ class Unit:
 
 class Foe(Unit):
     def __init__(self, hpLoc=(0,0,0,0), mpLoc = (0,0,0,0),
-                 threshhold = .75, posKey = None):
+                 threshhold = .95, posKey = None):
         super().__init__(hpLoc, mpLoc, threshhold)
         self.posKey = posKey #positional keybind of enemy
     def isAlive(self):

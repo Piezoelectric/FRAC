@@ -29,7 +29,7 @@ venueIndex = 15
 
 This defines the number of battles, and the index (0-indexed) of the Coliseum venue you want to battle in. This is set to 15 (Ghostlight Ruins) by default (best place for exalt training IMO).
 
-Ideally, you should set your browser zoom level so the FR coliseum displays with no blurriness or aliasing. Browsers, OSes, and monitors may display the coliseum canvas differently, but the actual elements of the coliseum canvas should look the same. 
+You should set your browser zoom level so the FR coliseum displays with no blurriness or aliasing, and so it fully displays without scrolling the browser window. Browsers, OSes, and monitors may display the coliseum canvas differently, but the actual elements of the coliseum canvas should look the same. 
 
 If stuff isn't working, try replacing each of the images in the directory with a screenshot from _your_ browser. 
 
@@ -62,4 +62,4 @@ Sometimes I see people on the forums say "Coli grinding isn't so bad, I usually 
 * Added print method to Dragons
 * Fixed `Battle.getReadyDragon()` function so it doesnt search entire screen
 * Added new parameter to `Battle.loadBattle()`, which takes coordinates of "Fight On" button. Previously the script would search for the Fight On button everytime, though the actual button would not change positions. By re-using known coordinates of this button, the next battle is loaded faster
-* Changed Foes pain threshhold to .75 (from .66), Dragons threshhold to .1 (from .25)
+* Changed Foes default pain threshhold to .75 (from .66), Dragons threshhold to .1 (from .25)

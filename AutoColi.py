@@ -1,7 +1,7 @@
 import pyautogui
 import time
 
-import BattleV0010 as Battle
+import Battle
 
 #==============================================================================#
 #    NOTES

@@ -52,7 +52,10 @@ Sometimes I see people on the forums say "Coli grinding isn't so bad, I usually 
 
 (I developed the first few versions on a personal machine before porting my code to Github. Despite this being the first "public" version, there are changes from previous personal versions.)
 
-**Current Version 10 / 2018-06-16** 
+**Version 11 / 2018-07-22**
+* Changed "lowHP" battle ending to use f5 refresh key (previously it used image detection to find the browser refresh button)
+
+**Version 10 / 2018-06-16** 
 * Expanded venue select to 2nd page
 * Supports exalt-grinding (previously only material grinding)
     * New battle logic which handles trainee/grinder distinction

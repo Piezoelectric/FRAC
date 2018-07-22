@@ -2,7 +2,7 @@ import pyautogui
 import time
 import operator
 
-from UnitsV0010 import *
+from Units import *
 
 #==============================================================================#
 #    FUNCTIONS
@@ -109,9 +109,10 @@ def loadBattle(state="mainMenu", venueIndex = 0, inputLoc = None):
         pass #TODO
 
     elif state == "lowHp": 
-        buttonLoc = pyautogui.locateOnScreen("refresh.png")
-        buttonCenterX, buttonCenterY = pyautogui.center(buttonLoc)
-        pyautogui.click(buttonCenterX, buttonCenterY)
+        #buttonLoc = pyautogui.locateOnScreen("refresh.png")
+        #buttonCenterX, buttonCenterY = pyautogui.center(buttonLoc)
+        #pyautogui.click(buttonCenterX, buttonCenterY)
+        pyautogui.press("f5")
 
         #After refreshing page, this becomes the main menu case
         time.sleep(5) #Wait for page to load
@@ -209,7 +210,7 @@ def createFoes():
         #Foe HP bars are a little above the MP bars (by 1 pixel)
         #and also a little wider
         foeList.append(Foe(hpLoc = hpLoc, mpLoc = mpLoc,
-                           posKey = keybind[i]))
+                           posKey = keybind[i])) 
     return foeList
 
 #==============================================================================#

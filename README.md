@@ -52,9 +52,18 @@ Sometimes I see people on the forums say "Coli grinding isn't so bad, I usually 
 
 (I developed the first few versions on a personal machine before porting my code to Github. Despite this being the first "public" version, there are changes from previous personal versions.)
 
-**Version 11 / 2018-07-22**
+**Version 11 / 2018-07-31**
 * Changed "lowHP" battle ending to use f5 refresh key (previously it used image detection to find the browser refresh button)
 * Changed Foe HP threshhold default to 0.95
+* More robust code for handling battle end scenarios
+    * Rolled "defeat" and "victory" into one condition, since the Fight On button is in the same spot for both end conditions
+    * changed loadBattle()
+    * changed isBattleWon() -> isBattleOver()
+* Faster battle loading
+    * Instead of checking the entire screen for the "fight on" button, the coordinates of the fight on button are stored, and used as a much smaller search region. This speeds battles up significantly, as there is no longer a 3 second delay in between each dragon's action
+* Better error handling
+    * If numFoes or numDragons = 0, the script will try to scan for foes again, as opposed to infinite-looping or immediately breaking. (The number of foes or dragons will never be 0 in a real battle)
+* Misc text/print tweaks
 
 **Version 10 / 2018-06-16** 
 * Expanded venue select to 2nd page

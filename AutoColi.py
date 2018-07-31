@@ -52,27 +52,34 @@ import Battle
 #==============================================================================#
 
 #==============================================================================#
-#    Main + Config
+#    Config
 #==============================================================================#
 
 #[role, eliminate hotkey if applicable]
 configDragons = [
     ["grinder", "s"],
     ["grinder", "s"],
-    ["trainee", None]
+    ["trainee", None] 
     ]
 
-numBattles = 20
+numBattles = 1000
 venueIndex = 15
+
+#==============================================================================#
+#    Main
+#Perform some initial setup
+#==============================================================================#
 
 input("Press any key, bring up battle window in 5 seconds")
 time.sleep(5)
 
 state = "mainMenu"
 
-fightOnButtonLoc = None #Will be fed into loadBattle,
-#either as nonetype or as a tuple of coordinates.
+#These two Coordinates will be fed into loadBattle,
+#either as nonetype or as a tuple of coordinates
 #See loadBattle documentation
+monsterBattleButtonLoc = pyautogui.locateOnScreen("monsterBattle.png")
+fightOnButtonLoc = None
 
 for i in range(numBattles):
     #==========================================================================#
@@ -82,8 +89,12 @@ for i in range(numBattles):
     #==========================================================================#
 
     print("Loading battle with state " + state)
-    Battle.loadBattle(state, venueIndex, fightOnButtonLoc)
-    state = "mainMenu"
+    if state == "normal":
+        Battle.loadBattle(state, venueIndex, fightOnButtonLoc)
+    elif state == "lowHp" or state == "mainMenu":
+        Battle.loadBattle(state, venueIndex, monsterBattleButtonLoc)
+        
+    # state = "mainMenu" possibly unnecessary
     time.sleep(2) #may need to wait for the battle to load in
 
     #==========================================================================#
@@ -94,7 +105,16 @@ for i in range(numBattles):
     battleActive = True
 
     Battle.checkCaptcha()
+    numFoeScans = 0
     foeList = Battle.createFoes()
+
+    # in case foes not found (0 foes), rescan some times
+    while numFoeScans < 10 and len(foeList) == 0:
+        foeList = Battle.createFoes()
+    #...and if numFoes still 0, pause for input
+    if len(foeList) == 0:
+        input("No foes found, check the Coliseum--press enter to resume")
+        time.sleep(5)
 
     #This should only be done at the start of the FIRST battle
     #The unit may have lost some HP after the first battle, but
@@ -104,7 +124,7 @@ for i in range(numBattles):
         for d in dragonList:
             print(d)
 
-    print("Begin Battle " + str(i))
+    print("Begin Battle [" + str(i) + "]")
     print("Number of dragons: " + str(len(dragonList)))
     print("Number of foes: " + str(len(foeList)))
 
@@ -120,19 +140,21 @@ for i in range(numBattles):
         #If so, break (skip the rest of the while loop)
         #======================================================================#
 
-        #Check if battle victory
-        if Battle.isBattleWon() == True:
-            print("Victory, battle is over")
-            state = "victory"
-            if bool(fightOnButtonLoc) == False: #buttonloc hasnt been specified
-                fightOnButtonLoc = pyautogui.locateOnScreen("fightOn.png")
+        #If we need to find the fightOn button
+        if bool(fightOnButtonLoc) == False: 
+            fightOnButtonLoc = pyautogui.locateOnScreen("fightOn.png")
+            
+        #Check if battle ended normally (victory or defeat)
+        if Battle.isBattleOver(fightOnButtonLoc) == True:
+            print("Battle [" + str(i) + "] ended normally")
+            state = "normal"
             battleActive = False
             break
 
         #If any non-trainee's HP is too low (Trainees can die no problem)
-        #EXPERIMENT--removing this check. TODO--see how it works out
+        #Refresh page (don't wait for defeat)
         if Battle.isDragonWeak(dragonList) == True:
-            print("Dragons are weak, battle is over")
+            print("Battle [" + str(i) + "] ended with lowHp")
             state = "lowHp"
             battleActive = False
             break
@@ -186,7 +208,7 @@ for i in range(numBattles):
     #so the battle has ended for one reason or another
     #Jump back up to top of for loop
     #==========================================================================#
-    print("End of battle " + str(i))
+    print("----------")
 
 #==============================================================================#
 #    End For Loop

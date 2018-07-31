@@ -32,7 +32,7 @@ def loadBattle(state="mainMenu", venueIndex = 0, inputLoc = None):
     Defaults to 0 (Training Fields)
     Only used if we're on the main menu
 
-    buttonCoords: optional parameter, holds coordinates for any button to press.
+    inputLoc: optional parameter, holds coordinates for any button to press.
     Default none.
     Can be used to save time if clicking the same button over and over,
     by bypassing the screenshot-based image matching.
@@ -75,11 +75,15 @@ def loadBattle(state="mainMenu", venueIndex = 0, inputLoc = None):
         time.sleep(1)
 
         #From main menu click Monster battle button
-        buttonLoc = pyautogui.locateOnScreen("monsterBattle.png")
+        if bool(inputLoc) == True:
+            buttonLoc = inputLoc
+        else:
+            buttonLoc = pyautogui.locateOnScreen("monsterBattle.png")
         #Monster Battle button glows when moused over. be careful!
+
         buttonCenterX, buttonCenterY = pyautogui.center(buttonLoc)
         pyautogui.click(buttonCenterX, buttonCenterY)
-        time.sleep(1)
+        time.sleep(5)
 
         #Click the appropriate venue
         venueName = venueNames[venueIndex]
@@ -90,33 +94,28 @@ def loadBattle(state="mainMenu", venueIndex = 0, inputLoc = None):
             nextButtonLoc = pyautogui.locateOnScreen("venueNext.png")
             nextCenterX, nextCenterY = pyautogui.center(nextButtonLoc)
             pyautogui.click(nextCenterX, nextCenterY)
-            time.sleep(1)
+            time.sleep(5)
             
         venueLoc = pyautogui.locateOnScreen(venueName+".png")
         venueCenterX, venueCenterY = pyautogui.center(venueLoc)
         pyautogui.click(venueCenterX, venueCenterY)
-        
-    elif state == "victory":
-        if bool(inputLoc) == True: #if loc specified use it
-            buttonCenterX, buttonCenterY = pyautogui.center(inputLoc)
-        else: #if loc not specified default to the usual image-based search
-            buttonLoc = pyautogui.locateOnScreen("fightOn.png")
-            buttonCenterX, buttonCenterY = pyautogui.center(buttonLoc)
 
+    elif state == "normal":
+        #both victory and defeat have a fightOn button which we locate on
+        if bool(inputLoc) == True: #if loc specified use it
+            buttonLoc = inputLoc
+        else: 
+            buttonLoc = pyautogui.locateOnScreen("fightOn.png")
+
+        buttonCenterX, buttonCenterY = pyautogui.center(buttonLoc)
         pyautogui.click(buttonCenterX, buttonCenterY)
 
-    elif state == "defeat":
-        pass #TODO
-
     elif state == "lowHp": 
-        #buttonLoc = pyautogui.locateOnScreen("refresh.png")
-        #buttonCenterX, buttonCenterY = pyautogui.center(buttonLoc)
-        #pyautogui.click(buttonCenterX, buttonCenterY)
         pyautogui.press("f5")
 
         #After refreshing page, this becomes the main menu case
         time.sleep(5) #Wait for page to load
-        loadBattle(state="mainMenu", venueIndex=venueIndex)
+        loadBattle(state="mainMenu", venueIndex=venueIndex, inputLoc = inputLoc)
 
     else:
         print("Check your state input")
@@ -210,20 +209,50 @@ def createFoes():
         #Foe HP bars are a little above the MP bars (by 1 pixel)
         #and also a little wider
         foeList.append(Foe(hpLoc = hpLoc, mpLoc = mpLoc,
-                           posKey = keybind[i])) 
+                           posKey = keybind[i],
+                           threshhold = .95)) #Only on tablet version (dont push)
     return foeList
 
 #==============================================================================#
 #    Check Battle End Functions
 #==============================================================================#
 
-def isBattleWon():
-    """During battleturns, check if the battle is over.
+def isBattleOver(inputLoc = None, fallBack = False):
+    """During battleturns, check if the battle is over,
+    and has ended in Victory or Defeat.
+    Both states have a Fight On button, so they're collapsed into
+    one function.
 
-    Parameters: None (image processing on entire screen)
+    Parameters:
+    inputLoc: optional parameter, coordinate tuple of the Fight On button.
+    Used as a local search region (faster than searching entire screen)
+    If Fight On button not found in the region, uses fallBack param to
+    determine if it should fall back to entire screen search.
+    entire screen.
+    Default None.
+    fallBack: optional parameter, bool which determines if the
+    backup entire-screen search should be used.
+    Default False.
+    
     Returns: True if battle is over, False otherwise
     """
-    tempLoc = pyautogui.locateOnScreen("experience.png")
+
+    tempLoc = None
+    
+    if inputLoc: #if inputLoc was specified
+        print("Searching for fight on button at stored coordinates "
+              + str(inputLoc))
+        inputLoc = (inputLoc[0] - 10,
+                    inputLoc[1] - 10,
+                    inputLoc[2] + 20,
+                    inputLoc[3] + 20)
+        tempLoc = pyautogui.locateOnScreen("fightOn.png", region=inputLoc)
+
+    #(inputLoc not specified OR search failed) AND fallBack 
+    if bool(tempLoc) == False and fallBack: 
+        print("Using entire-screen search")
+        tempLoc = pyautogui.locateOnScreen("fightOn.png")
+        
     return bool(tempLoc)
 
 def isDragonWeak(dragonList):
@@ -257,15 +286,14 @@ def getReadyDragon(dragonList):
     #One could use image processing on the entire screen,
     #but limiting the search to the region next to the dragon HP bar
     #limits the search, and also is easier to assign "ready" to "dragon"
+    #brittle--may change depend on screen reso--TODO?
 
     for i in range(len(dragonList)):
         d = dragonList[i]
         searchRegion = (d.hpLoc[0]+d.hpLoc[2], d.hpLoc[1]-30,
                         150, 70)
-        print("DEBUG: searchRegion == " + str(searchRegion))
+        # print("DEBUG: searchRegion == " + str(searchRegion))
 
-        #brittle--may change depend on screen reso--TODO?
-        #pyautogui.screenshot("aaaaa.png", region=searchRegion)
         tempLoc = pyautogui.locateOnScreen("ready.png", region=searchRegion)
         
         if bool(tempLoc) == True:

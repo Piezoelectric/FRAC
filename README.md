@@ -1,6 +1,8 @@
 # 𝓕𝓡 𝓐𝓾𝓽𝓸 𝓒𝓸𝓵𝓲
 
-Python script which automates the process of playing/grinding the 𝓕𝓵𝓲𝓰𝓱𝓽 𝓡𝓲𝓼𝓲𝓷𝓰 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶. Uses `PyAutoGUI` to take screenshots of the current screen, locate buttons, and analyze HP values. Should work on mac, linux, windows.
+Python script which automates the process of playing/grinding the 𝓕--𝓵𝓲𝓰 𝓱𝓽 𝓡--𝓲𝓼--𝓲 𝓷𝓰 𝓒--𝓸𝓵𝓲--𝓼𝓮  𝓾--𝓶. Uses `PyAutoGUI` to take screenshots of the current screen, locate buttons, and analyze HP values. Should work on mac, linux, windows.
+
+(Fancy text is to avoid Google's text crawler picking this up, hopefully.)
 
 `AutoColi.py` contains the main battle logic. `Battle.py` contains helper functions. `Units.py` contains the classes Foe and Dragon. 
 
@@ -43,9 +45,13 @@ Keep the browser window focused as much as possible, so that keystrokes are sent
 
 Note that 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 captchas are not automatically solved. Upon seeing a captcha, the script will pause to wait for you to solve it. You'll need to manually intervene every 10 or so battles. But hey, it's much better than manually doing all 10 battles.
 
-# Why?
+# Why use this?
 
 Sometimes I see people on the forums say "grinding isn't so bad, I usually watch netflix/listen to podcasts while I do it". When your game is so dull you have to come up with alternate ways to entertain yourself while playing the game ... it's not really worth the time and energy.
+
+[The game...is not fun.](https://www.youtube.com/watch?v=RphXjirD9p4) (If it's not fun, why bother?)
+
+As for using this over other services, this script only uses visual cues and keyboard hotkeys, and does not use websocket code. Its only interaction with the server is using keystrokes, which are a perfectly legitimate way of interacting with the server. Aside from that, all it does is screenshot the screen and tell the user where stuff is on screen, which is all on the user's computer.
 
 # Changelog
 

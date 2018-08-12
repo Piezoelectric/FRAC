@@ -6,6 +6,8 @@ Python script which automates the process of playing/grinding the 𝓕--𝓵𝓲
 
 `AutoColi.py` contains the main battle logic. `Battle.py` contains helper functions. `Units.py` contains the classes Foe and Dragon. 
 
+Use at your own risk. I'm not responsible for any damages to your account. Don't go bragging that you use a bot, obviously.
+
 # Usage
 
 ## Config

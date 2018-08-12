@@ -1,6 +1,6 @@
-# FRAutoColi
+# 𝓕𝓡 𝓐𝓾𝓽𝓸 𝓒𝓸𝓵𝓲
 
-Python script which automates the process of playing/grinding the Flight Rising coliseum. Uses `PyAutoGUI` to take screenshots of the current screen, locate buttons, and analyze HP values. Should work on mac, linux, windows.
+Python script which automates the process of playing/grinding the 𝓕𝓵𝓲𝓰𝓱𝓽 𝓡𝓲𝓼𝓲𝓷𝓰 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶. Uses `PyAutoGUI` to take screenshots of the current screen, locate buttons, and analyze HP values. Should work on mac, linux, windows.
 
 `AutoColi.py` contains the main battle logic. `Battle.py` contains helper functions. `Units.py` contains the classes Foe and Dragon. 
 
@@ -27,26 +27,25 @@ numBattles = 20
 venueIndex = 15
 ```
 
-This defines the number of battles, and the index (0-indexed) of the Coliseum venue you want to battle in. This is set to 15 (Ghostlight Ruins) by default (best place for exalt training IMO).
+This defines the number of battles, and the index (0-indexed) of the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 venue you want to battle in.
 
-You should set your browser zoom level so the FR coliseum displays with no blurriness or aliasing, and so it fully displays without scrolling the browser window. Browsers, OSes, and monitors may display the coliseum canvas differently, but the actual elements of the coliseum canvas should look the same. 
+You should set your browser zoom level so the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 displays with no blurriness or aliasing, and so it fully displays without scrolling the browser window. Browsers, OSes, and monitors may display the coliseum canvas differently, but the actual elements of the coliseum canvas should look the same. 
 
 If stuff isn't working, try replacing each of the images in the directory with a screenshot from _your_ browser. 
 
-Set up the FR Coliseum to enable keyboard hotkeys, and disable animations and visual effects.
+Set up the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 to enable keyboard hotkeys, and disable animations and visual effects.
 
 ## Running
 
-Navigate to the coliseum's main menu page (the Monster Battle button should be visible). Then invoke `python3 AutoColi.py` to start the script. Ideally you should split-screen so that your battle window and your Python window are both visible.
+Navigate to the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶's main menu page (the Monster Battle button should be visible). Then invoke `python3 AutoColi.py` to start the script. Ideally you should split-screen so that your battle window and your Python window are both visible.
 
 Keep the browser window focused as much as possible, so that keystrokes are sent to the correct window.
 
-Note that Coliseum captchas are not automatically solved. Upon seeing a captcha, the script will pause to wait for you to solve it. You'll need to manually intervene every 10 or so battles. But hey, it's much better than manually doing all 10 battles.
+Note that 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 captchas are not automatically solved. Upon seeing a captcha, the script will pause to wait for you to solve it. You'll need to manually intervene every 10 or so battles. But hey, it's much better than manually doing all 10 battles.
 
 # Why?
 
-Sometimes I see people on the forums say "Coli grinding isn't so bad, I usually watch netflix/listen to podcasts while I do it". When your game is so dull you have to come up with alternate ways to entertain yourself while playing the game ... it's not really worth the time and energy.
-
+Sometimes I see people on the forums say "grinding isn't so bad, I usually watch netflix/listen to podcasts while I do it". When your game is so dull you have to come up with alternate ways to entertain yourself while playing the game ... it's not really worth the time and energy.
 
 # Changelog
 

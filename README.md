@@ -31,7 +31,7 @@ numBattles = 20
 venueIndex = 15
 ```
 
-This defines the number of battles, and the index (0-indexed) of the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 venue you want to battle in.
+This defines the number of battles, and the index of the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 venue you want to battle in. Indexes should start at 0, and indexes should include the next page buttons (so Next Page is index 15, Previous Page is index 16, Ghostlight Ruins is index 17)
 
 You should set your browser zoom level so the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 displays with no blurriness or aliasing, and so it fully displays without scrolling the browser window. Browsers, OSes, and monitors may display the coliseum canvas differently, but the actual elements of the coliseum canvas should look the same. 
 

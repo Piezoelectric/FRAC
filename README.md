@@ -59,6 +59,18 @@ As for using this over other services, this script only uses visual cues and key
 
 (I developed the first few versions on a personal machine before porting my code to Github. Despite this being the first "public" version, there are changes from previous personal versions.)
 
+**Version 12 / 2018-08-12**
+
+* **"Fast mode" added.** FR's coliseum has a static layout, so buttons will maintain location. Therefore, it's possible to precompute the general location of all these buttons, instead of searching for them.
+ * Focuses on one feature, then extrapolates other button regions from the one feature's location. (Currently the feature is the "monster battle" button.)
+    * The idea is to restrict the "locateOnScreen"/"locateAllOnScreen" search areas to smaller regions, instead of the entire screen (which is slower).
+    * This was partially implemented in v12 by reusing the fightOnButton coordinates. Now _many_ relevant coordinates are reused.
+    * May not retrieve _exact_ location of button, but close enough (a 200x200 region instead of 1920x1080).
+    * Eliminates searching the entire screen for foe MP bars, captcha text, and fightOn button (overall savings of 10 seconds at the start of each battle)
+* Functions rewritten to be compatible with fast mode, both enabled and disabled
+* Time for animations to finish decreased to .25 seconds (from 1 second)
+* misc text fixes
+
 **Version 11 / 2018-07-31**
 * Changed "lowHP" battle ending to use f5 refresh key (previously it used image detection to find the browser refresh button)
 * Changed Foe HP threshhold default to 0.95

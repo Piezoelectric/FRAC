@@ -6,13 +6,15 @@ Python script which automates the process of playing/grinding the 𝓕--𝓵𝓲
 
 `AutoColi.py` contains the main battle logic. `Battle.py` contains helper functions. `Units.py` contains the classes Foe and Dragon. 
 
-Use at your own risk. I'm not responsible for any damages to your account. Don't go bragging that you use a bot, obviously.
+Use at your own risk. I'm not responsible for any damages to your account. Don't go bragging that you use a bot, obviously. Don't run the bot 24/7 (not that it'll work anyway).
 
 # Usage
 
 ## Config
 
 Get some level 25 dragons. I don't know or care how. Follow one of the physical glass cannon builds (STR focus with Eliminate).
+
+Set up the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 to enable keyboard hotkeys, and disable animations and visual effects.
 
 In `AutoColi.py`, find the following lines:
 
@@ -37,7 +39,11 @@ You should set your browser zoom level so the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 d
 
 If stuff isn't working, try replacing each of the images in the directory with a screenshot from _your_ browser. 
 
-Set up the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 to enable keyboard hotkeys, and disable animations and visual effects.
+```
+fastMode = True
+```
+
+Enables/disables fast mode. Normal mode searches the entire screen for buttons and other features (the fight on button, unit HP bars, etc). Fast mode uses coordinate math to restrict the search area to a small region, and in some cases it directly locates the buttons without searching. Coordinate math may break depending on your screen settings, but it's much faster than searching the entire screen repeatedly.
 
 ## Running
 

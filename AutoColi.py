@@ -6,30 +6,16 @@ import Battle
 #==============================================================================#
 #    NOTES
 
-#Written for Firefox (post Quantum) versions, at 80% zoom
-#on windows 7, 1920x1080
-#May need to replace images
-
-#NEW TO VERSION0010 (Jun 16 2018)
-#-Expanded venue select to 2nd page
-#-Supports exalt-grinding
-#-New battle logic which handles trainee/grinder distinction
-#--"role" field added to Dragons
-#--Trainees only defend with d key
-#--Trainees may be KOd and battle will continue
-#-added print method to Dragons
-#-Refined the getReadyDragon function so it doesnt saerch entire screen (bugfix)
-#-Storing coordinates of "Fight On" button, so next battle is loaded faster
-#-Changed Foes threshhold to .75 (from .66), Dragons threshhold to .1 (from .25)
-
 #PyAutoGui's locateOnScreen is Image-based detection,
 #used for finding units and image processing and nearly everything,
 #since HTML5 Canvas elements are non-capturable
 
 #PyAutoGui.locateOnScreen returns a tuple of coordinates if image was found,
 #returns None if not found. (left, top, width, height)
-#tuples are truthy and None is falsy.
-#This trick is used in many places.
+#tuples are truthy and None is falsy
+
+#For locateOnScreen and locateAllOnScreen,
+#if region=None, defaults to searching entire screen
 
 #PyAutoGui also has a keyboard thing,
 #pyautogui.typewrite('Hello world!') 
@@ -43,10 +29,6 @@ import Battle
 
 #using the snipping tool DOES NOT WORK for some reason (possibly filenames??)
 #Youre better off using GIMP and cutting the reference images needed
-
-#TODO:
-#Come up with a cleaner way to detect a dragon's eliminate hotkey
-#Right now it's hardcoded, and buried in
 
 #hp, mp are never capitalized, unless in camelCasing
 #==============================================================================#
@@ -62,39 +44,58 @@ configDragons = [
     ["trainee", None] 
     ]
 
-numBattles = 1000
-venueIndex = 15
+numBattles = 20
+venueIndex = 17
+
+fastMode = True
 
 #==============================================================================#
 #    Main
 #Perform some initial setup
 #==============================================================================#
 
-input("Press any key, bring up battle window in 5 seconds")
+input("Press enter, then bring up battle window within 5 seconds")
 time.sleep(5)
 
 state = "mainMenu"
 
-#These two Coordinates will be fed into loadBattle,
-#either as nonetype or as a tuple of coordinates
-#See loadBattle documentation
-monsterBattleButtonLoc = pyautogui.locateOnScreen("monsterBattle.png")
-fightOnButtonLoc = None
+#Every entry is a SEARCH REGION for the button,
+#not necessarily the direct coordinate of the button;
+#These smaller regions are used to reduce search times
+#(as default, pyautogui searches the entire screen)
+#They can be set to the exact location of the button,
+#In which case the search should automatically succeed
+#But of course, coordinate math is always risky
+buttonLocsDict = {
+    "canvasLoc": None,
+    "monsterBattleButtonLoc": None,
+    "fightOnButtonLoc": None,
+    "venueNextPageLoc": None, 
+    "venueLoc": None,
+    "captchaLoc": None,
+    "lowerLeftQuad": None, #quadrant used to find dragon HP bars
+    "upperRightQuad": None, #quadrant used to find foe MP bars
+    }
+
+if fastMode:
+    buttonLocsDict = Battle.extrapolateButtonLocs(venueIndex)
+    print("Warning: fast mode enabled!")
+    print(buttonLocsDict)
+else:
+    buttonLocsDict["monsterBattleButtonLoc"] = pyautogui.locateOnScreen("monsterBattle.png")
 
 for i in range(numBattles):
     #==========================================================================#
     #    Perform a single battle
     #Loads the next battle depending on how the previous battle ended ('state').
-    #After that, resets state to mainMenu-- current battle may end differently.
     #==========================================================================#
 
     print("Loading battle with state " + state)
     if state == "normal":
-        Battle.loadBattle(state, venueIndex, fightOnButtonLoc)
+        Battle.loadBattle(state, venueIndex, buttonLocsDict)
     elif state == "lowHp" or state == "mainMenu":
-        Battle.loadBattle(state, venueIndex, monsterBattleButtonLoc)
+        Battle.loadBattle(state, venueIndex, buttonLocsDict)
         
-    # state = "mainMenu" possibly unnecessary
     time.sleep(2) #may need to wait for the battle to load in
 
     #==========================================================================#
@@ -104,13 +105,13 @@ for i in range(numBattles):
 
     battleActive = True
 
-    Battle.checkCaptcha()
+    Battle.checkCaptcha(buttonLocsDict)
     numFoeScans = 0
-    foeList = Battle.createFoes()
+    foeList = Battle.createFoes(buttonLocsDict)
 
     # in case foes not found (0 foes), rescan some times
     while numFoeScans < 10 and len(foeList) == 0:
-        foeList = Battle.createFoes()
+        foeList = Battle.createFoes(buttonLocsDict)
     #...and if numFoes still 0, pause for input
     if len(foeList) == 0:
         input("No foes found, check the Coliseum--press enter to resume")
@@ -120,7 +121,7 @@ for i in range(numBattles):
     #The unit may have lost some HP after the first battle, but
     #its HP coords are still known. dragons dont move.
     if i < 1:
-        dragonList = Battle.createDragons(configDragons)
+        dragonList = Battle.createDragons(configDragons, buttonLocsDict)
         for d in dragonList:
             print(d)
 
@@ -141,11 +142,11 @@ for i in range(numBattles):
         #======================================================================#
 
         #If we need to find the fightOn button
-        if bool(fightOnButtonLoc) == False: 
+        if buttonLocsDict["fightOnButtonLoc"] == False: 
             fightOnButtonLoc = pyautogui.locateOnScreen("fightOn.png")
             
         #Check if battle ended normally (victory or defeat)
-        if Battle.isBattleOver(fightOnButtonLoc) == True:
+        if Battle.isBattleOver(buttonLocsDict) == True:
             print("Battle [" + str(i) + "] ended normally")
             state = "normal"
             battleActive = False
@@ -164,12 +165,12 @@ for i in range(numBattles):
         #Since the battle is not over, make an attack
         #======================================================================#
         readyDragonIndex = Battle.getReadyDragon(dragonList)
-        print("DEBUG readyDragonIndex == " + str(readyDragonIndex))
+        print("readyDragonIndex == " + str(readyDragonIndex))
 
         #No dragons ready --> foe attacking
         if readyDragonIndex == -1:
             print("No dragons active, waiting")
-            time.sleep(1) #Allow foe animations to finish
+            time.sleep(0.25) #Allow foe animations to finish
 
         #Dragon ready --> have it make an action
         else:
@@ -198,7 +199,7 @@ for i in range(numBattles):
                 pyautogui.typewrite(keyString, interval = 0.1) 
                 #scratch key will ALWAYS be e
 
-            time.sleep(0.5) #Allow dragon's attack anim to finish
+            time.sleep(0.25) #Allow dragon's attack anim to finish
 
         print("Battle Turn completed")
 

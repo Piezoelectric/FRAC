@@ -12,10 +12,66 @@ from Units import *
 #==============================================================================#
 
 #==============================================================================#
-#    LOAD BATTLE
+#    Extrapolate Coordinates
+#This function DOES NOT interact with the server.
+#Used to restrict search spaces (instead of searching the entire screen)
 #==============================================================================#
 
-def loadBattle(state="mainMenu", venueIndex = 0, inputLoc = None):
+def extrapolateButtonLocs(venueIndex):
+    """Focuses on one feature, then extrapolates other button regions 
+    from the one feature's location.
+    (Currently the feature is the "monster battle" button.)
+    FR's coliseum has a static layout, so buttons will maintain location. 
+    Therefore, it's possible to precompute the general location
+    of all these buttons, instead of searching for them.
+    The idea is to restrict the "locateOnScreen"/"locateAllOnScreen" search areas
+    to smaller regions, instead of the entire screen (which is slower);
+    May not retrieve _exact_ location of button, but close enough.
+
+    Function is only run if fastMode is enabled in main.
+
+    Parameters:
+    venueIndex: index of the coliseum venue
+    default 0 (for Training Fields)
+
+    Returns:
+    A dictionary of button/feature locations (buttons, hp bars, etc)
+    """
+
+    buttonLocsDict = {}
+
+    #From the focus, obtain the coliseum canvas/region of interest
+    focus = pyautogui.locateOnScreen("monsterBattle.png")
+    buttonLocsDict["monsterBattleButtonLoc"] = focus
+    canvasLoc = (focus[0]-100, focus[1]-375, 800, 600)
+    buttonLocsDict["canvasLoc"] = canvasLoc
+
+    #Find location of the particular venue
+    venueMenuLoc = (canvasLoc[0]+20, canvasLoc[1]+95, 700, 450) 
+    venueIndex = venueIndex%16 #Handling if it falls to the next page
+    venueRow = int(venueIndex/4)
+    venueColumn = venueIndex%4
+    buttonLocsDict["venueLoc"] = (venueMenuLoc[0] + 700*(venueColumn/4) - 50, 
+                                  venueMenuLoc[1] + 450*(venueRow/4) - 50,
+                                  250,
+                                  200)
+
+    #Set other loc-regions
+    buttonLocsDict["fightOnButtonLoc"] = (canvasLoc[0]+520, canvasLoc[1]+450, 175, 110)
+    buttonLocsDict["venueNextPageLoc"] = (canvasLoc[0]+540, canvasLoc[1]+425, 175, 120)
+    buttonLocsDict["captchaLoc"] = (canvasLoc[0]+250, canvasLoc[1]+10, 250, 75)
+    buttonLocsDict["lowerLeftQuad"] = (canvasLoc[0], canvasLoc[1]+300, 400, 300)
+    buttonLocsDict["upperRightQuad"] = (canvasLoc[0]+400, canvasLoc[1], 400, 300)
+
+    return buttonLocsDict
+
+#==============================================================================#
+#    LOAD BATTLE
+#This function DOES interact with the server.
+#Loads battle depending on how the previous battle ended.
+#==============================================================================#
+
+def loadBattle(state, venueIndex, buttonLocsDict):
     """Loads the next battle depending on how the previous battle ended.
 
     Parameters:
@@ -23,23 +79,19 @@ def loadBattle(state="mainMenu", venueIndex = 0, inputLoc = None):
     and the current screen state.
     -mainMenu: (Default) Coli main menu screen.
     Click monsterBattle button, then click a venue.
-    (Currently hardcoded to Training Fields.)
-    -victory: Clicks the fightOn button.
-    -defeat: Not yet coded
+    -normal: Clicks the fightOn button.
     -lowHp: A dragon has low health. Refresh the page to get to main menu.
 
-    int venueIndex: determines the venue to load from. 0 indexd.
+    int venueIndex: determines the venue to load from. 0 indexed.
     Defaults to 0 (Training Fields)
     Only used if we're on the main menu
 
-    inputLoc: optional parameter, holds coordinates for any button to press.
-    Default none.
+    dict buttonLocsDict: holds coordinates for all buttons to press. .
     Can be used to save time if clicking the same button over and over,
     by bypassing the screenshot-based image matching.
-    (for example, the Fight On button--which is where its currently used--
-    it's in the same location every time).
-    If buttonCoords for the button to click are not specified or are invalid,
-    defaults to image matching.
+    (static layout means buttons are in the same location every time).
+    If coordinates for the button to click are not specified or are invalid,
+    defaults to screenshot-searching.
     
     Returns: None
     """
@@ -60,6 +112,8 @@ def loadBattle(state="mainMenu", venueIndex = 0, inputLoc = None):
         "borealWood",
         "crystalPools",
         "harpysRoost", #index 14, end of first page
+        None, #This is the next page button
+        None, #this is the previous page button
         "ghostlightRuins",
         "mire",
         "kelpBeds",
@@ -68,19 +122,16 @@ def loadBattle(state="mainMenu", venueIndex = 0, inputLoc = None):
     
     if state == "mainMenu":
         #Click seizure warning, if it exists
-        seizureWarningLoc = pyautogui.locateOnScreen("seizureWarning.png")
-        if bool(seizureWarningLoc):
-            seizeCenterX, seizeCenterY = pyautogui.center(seizureWarningLoc)
-            pyautogui.click(seizeCenterX, seizeCenterY)
-        time.sleep(1)
+        #seizureWarningLoc = pyautogui.locateOnScreen("seizureWarning.png")
+        #if bool(seizureWarningLoc):
+        #    seizeCenterX, seizeCenterY = pyautogui.center(seizureWarningLoc)
+        #    pyautogui.click(seizeCenterX, seizeCenterY)
+        #time.sleep(1)
 
         #From main menu click Monster battle button
-        if bool(inputLoc) == True:
-            buttonLoc = inputLoc
-        else:
-            buttonLoc = pyautogui.locateOnScreen("monsterBattle.png")
         #Monster Battle button glows when moused over. be careful!
-
+        buttonLoc = pyautogui.locateOnScreen("monsterBattle.png",
+            region = buttonLocsDict["monsterBattleButtonLoc"])
         buttonCenterX, buttonCenterY = pyautogui.center(buttonLoc)
         pyautogui.click(buttonCenterX, buttonCenterY)
         time.sleep(5)
@@ -91,22 +142,22 @@ def loadBattle(state="mainMenu", venueIndex = 0, inputLoc = None):
 
         if venueIndex > 14: #it's not on current page, go to next page
             print("On venue select, skipping to next page")
-            nextButtonLoc = pyautogui.locateOnScreen("venueNext.png")
+            nextButtonLoc = pyautogui.locateOnScreen("venueNext.png",
+                region = buttonLocsDict["venueNextPageLoc"])
             nextCenterX, nextCenterY = pyautogui.center(nextButtonLoc)
             pyautogui.click(nextCenterX, nextCenterY)
             time.sleep(5)
-            
-        venueLoc = pyautogui.locateOnScreen(venueName+".png")
+
+        venueLoc = pyautogui.locateOnScreen(venueName+".png",
+            region = buttonLocsDict["venueLoc"])
         venueCenterX, venueCenterY = pyautogui.center(venueLoc)
         pyautogui.click(venueCenterX, venueCenterY)
 
     elif state == "normal":
-        #both victory and defeat have a fightOn button which we locate on
-        if bool(inputLoc) == True: #if loc specified use it
-            buttonLoc = inputLoc
-        else: 
-            buttonLoc = pyautogui.locateOnScreen("fightOn.png")
-
+        #both victory and defeat have a fightOn button which we locate on,
+        #conveniently in the same location
+        buttonLoc = pyautogui.locateOnScreen("fightOn.png", 
+            region = buttonLocsDict["fightOnButtonLoc"])
         buttonCenterX, buttonCenterY = pyautogui.center(buttonLoc)
         pyautogui.click(buttonCenterX, buttonCenterY)
 
@@ -115,7 +166,7 @@ def loadBattle(state="mainMenu", venueIndex = 0, inputLoc = None):
 
         #After refreshing page, this becomes the main menu case
         time.sleep(5) #Wait for page to load
-        loadBattle(state="mainMenu", venueIndex=venueIndex, inputLoc = inputLoc)
+        loadBattle(state="mainMenu", venueIndex=venueIndex, buttonLocsDict = buttonLocsDict)
 
     else:
         print("Check your state input")
@@ -124,34 +175,42 @@ def loadBattle(state="mainMenu", venueIndex = 0, inputLoc = None):
 
 #==============================================================================#
 #    BATTLESTART
+#These functions DO NOT interact with the server.
+#These functions check battle status, and create initial battle status
 #==============================================================================#
 
-def checkCaptcha():
+def checkCaptcha(buttonLocsDict):
     """At battlestart, check for captcha.
     If captcha is found, halts execution to ask user to solve.
     
-    Parameters: None
+    Parameters:
+    dict buttonLocsDict: (see loadBattle)
+    
     Returns: None
     """
-    captchaPresence = pyautogui.locateOnScreen("camping.png")
-    if captchaPresence:
+    captchaPresence = pyautogui.locateOnScreen("camping.png", 
+        region = buttonLocsDict["captchaLoc"])
+    if captchaPresence != None:
         input("Captcha detected, please solve then hit enter.")
         time.sleep(5)
     return None
 
-def createDragons(configDragons):
+def createDragons(configDragons, buttonLocsDict):
     """At battlestart, locate Dragons based on full HP bars.
 
     Parameters:
     list-of-lists configDragons: required parameter which describes dragon
     configs (Roles such as grinder/trainee and eliminate hotkey)
     Creates dragons based on specified configs.
+
+    dict buttonLocsDict: (see loadBattle)
     
     Returns: a list of Dragon objects
     """
     dragonList = []
     dragonHPLocs = []
-    for loc in pyautogui.locateAllOnScreen("unitFullHP.png"):
+    for loc in pyautogui.locateAllOnScreen("unitFullHP.png", 
+        region = buttonLocsDict["lowerLeftQuad"]):
         dragonHPLocs.append(loc) #A set of coords describing unit HP bar position
 
     #Sort dragonHPLocs by height, and assign index from top to bottom
@@ -175,16 +234,19 @@ def createDragons(configDragons):
 #their MP bar looks the same
 #That having been said, since this is only run at start of battle,
 #This measure may be unnecessary. But it works as-is.
-def createFoes():
+def createFoes(buttonLocsDict):
     """At battlestart, locate Foes based on MP bars,
     and create Foe objects.
 
-    Parameters: None
+    Parameters: 
+    dict buttonLocsDict: (see loadBattle)
+    
     Returns: a list of Foe objects
     """
     foeList = []
     foeMPLocs = []
-    for loc in pyautogui.locateAllOnScreen("foeMP.png"):
+    for loc in pyautogui.locateAllOnScreen("foeMP.png",
+        region = buttonLocsDict["upperRightQuad"]):
         foeMPLocs.append(loc) #A set of coords describing enemy MP bar position
 
     #Determine which foe has which keybind
@@ -215,21 +277,19 @@ def createFoes():
 
 #==============================================================================#
 #    Check Battle End Functions
+#These functions DO NOT interact with the server.
+#These functions check battle status, and see if they've reached an end status
 #==============================================================================#
 
-def isBattleOver(inputLoc = None, fallBack = False):
+def isBattleOver(buttonLocsDict, fallBack = False):
     """During battleturns, check if the battle is over,
     and has ended in Victory or Defeat.
     Both states have a Fight On button, so they're collapsed into
     one function.
 
     Parameters:
-    inputLoc: optional parameter, coordinate tuple of the Fight On button.
-    Used as a local search region (faster than searching entire screen)
-    If Fight On button not found in the region, uses fallBack param to
-    determine if it should fall back to entire screen search.
-    entire screen.
-    Default None.
+    dict buttonLocsDict: (see loadBattle)    
+    
     fallBack: optional parameter, bool which determines if the
     backup entire-screen search should be used.
     Default False.
@@ -237,20 +297,12 @@ def isBattleOver(inputLoc = None, fallBack = False):
     Returns: True if battle is over, False otherwise
     """
 
-    tempLoc = None
-    
-    if inputLoc: #if inputLoc was specified
-        print("Searching for fight on button at stored coordinates "
-              + str(inputLoc))
-        inputLoc = (inputLoc[0] - 10,
-                    inputLoc[1] - 10,
-                    inputLoc[2] + 20,
-                    inputLoc[3] + 20)
-        tempLoc = pyautogui.locateOnScreen("fightOn.png", region=inputLoc)
+    tempLoc = pyautogui.locateOnScreen("fightOn.png", 
+        region=buttonLocsDict["fightOnButtonLoc"])
 
     #(inputLoc not specified OR search failed) AND fallBack 
     if bool(tempLoc) == False and fallBack: 
-        print("Using entire-screen search")
+        print("Fallback triggered: using entire-screen search")
         tempLoc = pyautogui.locateOnScreen("fightOn.png")
         
     return bool(tempLoc)
@@ -272,7 +324,9 @@ def isDragonWeak(dragonList):
 
 #==============================================================================#
 #    BATTLETURN
+#These functions DO NOT interact with the server.
 #Assuming battle hasn't hit an end condition--proceed as normal
+#These functions check battle status while a battle is in progress
 #==============================================================================#
 
 

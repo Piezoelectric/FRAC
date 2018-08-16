@@ -43,7 +43,7 @@ class Foe(Unit):
 
 class Dragon(Unit):
     def __init__(self, hpLoc=(0,0,0,0), mpLoc = (0,0,0,0),
-                 threshhold = .1, role = None, elimKey = None):
+                 threshhold = .25, role = None, elimKey = None):
         super().__init__(hpLoc, mpLoc, threshhold)
         self.role = role #Role, grinder trainee other
         self.elimKey = elimKey #keybind assigned to Eliminate

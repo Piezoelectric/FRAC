@@ -146,7 +146,7 @@ def loadBattle(state, venueIndex, buttonLocsDict):
                 region = buttonLocsDict["venueNextPageLoc"])
             nextCenterX, nextCenterY = pyautogui.center(nextButtonLoc)
             pyautogui.click(nextCenterX, nextCenterY)
-            time.sleep(5)
+            time.sleep(3)
 
         venueLoc = pyautogui.locateOnScreen(venueName+".png",
             region = buttonLocsDict["venueLoc"])
@@ -307,20 +307,28 @@ def isBattleOver(buttonLocsDict, fallBack = False):
         
     return bool(tempLoc)
 
-def isDragonWeak(dragonList):
+def areDragonsWeak(dragonList):
     """During battleturns, check if a grinder dragon is weak.
 
     Parameters: A list of Dragons created at battlestart by createDragons()
     Returns: boolean
-    True if one (or more) grinder dragons is missing HP below their
-    pain threshhold (Dragon.threshhold)
+    True if all grinder dragons are missing HP below their
+    pain threshhold (Dragon.threshhold). Ignores non-grinders
     False otherwise.
-    Ignores trainees
     """
+    grinderCount = len([d for d in dragonList if d.role == "grinder"])
+    weakCount = 0
+    
     for d in dragonList:
-        if d.role != "trainee" and d.isHpLow():
-            return True
-    return False
+        if d.role == "grinder" and d.isHpLow():
+            weakCount+=1
+
+    return(weakCount >= grinderCount)
+
+    #for d in dragonList:
+    #    if d.role != "trainee" and d.isHpLow():
+    #        return True
+    #return False
 
 #==============================================================================#
 #    BATTLETURN

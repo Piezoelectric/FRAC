@@ -63,7 +63,21 @@ As for using this over other services, this script only uses visual cues and key
 
 # Changelog
 
-(I developed the first few versions on a personal machine before porting my code to Github. Despite this being the first "public" version, there are changes from previous personal versions.)
+(I developed the first few versions on a personal machine before porting my code to Github. Despite this being the first "public" version, there are changes from previous personal versions.) I should also figure out a better location to put these notes.
+
+**Version 12.1 / 2018-08-16**
+
+This update focuses on smaller adjustments:
+* Improved the "is dragon weak" battle ending scenario
+    * Old: Triggers the refresh if one grinder has HP below threshhold
+    * New: Triggers the refresh only if *all* grinders have HP below threshhold. 
+    * While this won't make battles move any faster, it will not trigger the refresh as often, continuing the streak and making levelup progress faster
+    * Adjusted Dragon default threshhold to compensate (.1 -> .25)
+    * Renamed: isDragonWeak() -> areDragonsWeak()
+* Adjusted the captcha check/small QoL improvement
+    * Old: Required the user to solve the captcha, focus on program window, hit enter to proceed, refocus on battle window
+    * New: Program continues to scan for foes if none are found. Thus, after solving captcha, program automatically rescans for foes; no need to manually resume program. 
+* Changed timing on the main menu (After clicking the "next page" button, wait 5 seconds -> wait 3 seconds)
 
 **Version 12 / 2018-08-12**
 

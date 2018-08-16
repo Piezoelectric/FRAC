@@ -44,7 +44,7 @@ configDragons = [
     ["trainee", None] 
     ]
 
-numBattles = 20
+numBattles = 17
 venueIndex = 17
 
 fastMode = True
@@ -105,12 +105,13 @@ for i in range(numBattles):
 
     battleActive = True
 
-    Battle.checkCaptcha(buttonLocsDict)
-    numFoeScans = 0
+    #Battle.checkCaptcha(buttonLocsDict)
+    #numFoeScans = 0
     foeList = Battle.createFoes(buttonLocsDict)
 
     # in case foes not found (0 foes), rescan some times
-    while numFoeScans < 10 and len(foeList) == 0:
+    #while numFoeScans < 10 and len(foeList) == 0:
+    while len(foeList) == 0:
         foeList = Battle.createFoes(buttonLocsDict)
     #...and if numFoes still 0, pause for input
     if len(foeList) == 0:
@@ -120,8 +121,11 @@ for i in range(numBattles):
     #This should only be done at the start of the FIRST battle
     #The unit may have lost some HP after the first battle, but
     #its HP coords are still known. dragons dont move.
+    #Attempt to recreate dragonList if 0 dragons found
     if i < 1:
         dragonList = Battle.createDragons(configDragons, buttonLocsDict)
+        while len(dragonList) == 0:
+            dragonList = Battle.createDragons(configDragons, buttonLocsDict)
         for d in dragonList:
             print(d)
 
@@ -154,7 +158,7 @@ for i in range(numBattles):
 
         #If any non-trainee's HP is too low (Trainees can die no problem)
         #Refresh page (don't wait for defeat)
-        if Battle.isDragonWeak(dragonList) == True:
+        if Battle.areDragonsWeak(dragonList) == True:
             print("Battle [" + str(i) + "] ended with lowHp")
             state = "lowHp"
             battleActive = False

@@ -8,6 +8,8 @@ Python script which automates the process of playing/grinding the 𝓕--𝓵𝓲
 
 Use at your own risk. I'm not responsible for any damages to your account. Don't go bragging that you use a bot, obviously. Don't run the bot 24/7 (not that it'll work anyway).
 
+If you appreciate the program, feel free to donate at [a paypal link I didn't make yet].
+
 # Usage
 
 ## Config
@@ -63,7 +65,7 @@ As for using this over other services, this script only uses visual cues and key
 
 # Changelog
 
-(I developed the first few versions on a personal machine before porting my code to Github. Despite this being the first "public" version, there are changes from previous personal versions.) I should also figure out a better location to put these notes.
+(I developed the first few versions on a personal machine before porting my code to Github. The "published" version numbers also account for changes from previous personal versions.) I should also figure out a better location to put these notes.
 
 **Version 12.1 / 2018-08-16**
 

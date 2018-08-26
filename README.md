@@ -51,7 +51,7 @@ Enables/disables fast mode. Normal mode searches the entire screen for buttons a
 
 Navigate to the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶's main menu page (the Monster Battle button should be visible). Then invoke `python3 AutoColi.py` to start the script. Ideally you should split-screen so that your battle window and your Python window are both visible.
 
-Keep the browser window focused as much as possible, so that keystrokes are sent to the correct window.
+Keep the browser window focused as much as possible, so that keystrokes are sent to the correct window. 
 
 Note that 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 captchas are not automatically solved. Upon seeing a captcha, the script will pause to wait for you to solve it. You'll need to manually intervene every 10 or so battles. But hey, it's much better than manually doing all 10 battles.
 
@@ -66,6 +66,15 @@ As for using this over other services, this script only uses visual cues and key
 # Changelog
 
 (I developed the first few versions on a personal machine before porting my code to Github. The "published" version numbers also account for changes from previous personal versions.) I should also figure out a better location to put these notes.
+
+**Version 12.2 / 2018-08-26**
+
+Smaller adjustments:
+* Added instantEliminate functionality. This will make some battles move faster (for festival grinding scenarios)
+    * instantEliminate sets all foe HP threshholds to 1
+    * If a foe has an HP threshhold of 1, isHpLow() always returns true, indicating that the foe can be immediately Eliminated (instead of scratch -> eliminate). This does not apply to the Unit base class or Dragon class.
+    * Old Foe behavior should still be in place. That is, if a foe has an HP threshhold that's not 1, then the dragon uses Eliminate only when the foe's HP is below the thresshold.
+* Removed the "press enter" from the start of the program.
 
 **Version 12.1 / 2018-08-16**
 

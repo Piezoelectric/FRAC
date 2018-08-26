@@ -35,6 +35,15 @@ class Foe(Unit):
                  threshhold = .95, posKey = None):
         super().__init__(hpLoc, mpLoc, threshhold)
         self.posKey = posKey #positional keybind of enemy
+
+    def isHpLow(self):
+        if self.threshhold == 1: #Foes can be instantly eliminated
+            print("DEBUG: Foe using instant-kill threshhold")
+            return True
+        else:
+            print("DEBUG: Foe using regular threshhold")
+            return super().isHpLow() #hopefully this works
+        
     def isAlive(self):
         #if foeMP not found in known foeMP coordinates, unit is dead;
         #img is None
@@ -53,7 +62,7 @@ class Dragon(Unit):
                 + "MPLoc: " + str(self.mpLoc) + "\n"
                 + "threshhold: " + str(self.threshhold) + "\n"
                 + "role: " + str(self.role) + "\n"
-                + "elimKey" + str(self.elimKey))
+                + "elimKey: " + str(self.elimKey))
 
     def isElimReady(self):
         img = pyautogui.screenshot(region=self.mpLoc)

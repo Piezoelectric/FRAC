@@ -41,20 +41,24 @@ import Battle
 configDragons = [
     ["grinder", "s"],
     ["grinder", "s"],
-    ["trainee", None] 
+    ["grinder", "a"] 
     ]
 
-numBattles = 17
-venueIndex = 17
+numBattles = 35
+venueIndex = 2
 
+#Use coordinate math instead of fullscreen search
 fastMode = True
+
+#Enable if enemies are weak/low-level, and can be instantly Eliminated
+instantEliminate = True
 
 #==============================================================================#
 #    Main
 #Perform some initial setup
 #==============================================================================#
 
-input("Press enter, then bring up battle window within 5 seconds")
+print("Bring up battle window within 5 seconds")
 time.sleep(5)
 
 state = "mainMenu"
@@ -105,18 +109,14 @@ for i in range(numBattles):
 
     battleActive = True
 
-    #Battle.checkCaptcha(buttonLocsDict)
-    #numFoeScans = 0
-    foeList = Battle.createFoes(buttonLocsDict)
+    foeList = []
+    foeHpThreshhold = None
+    if instantEliminate == True:
+        foeHpThreshhold = 1
 
-    # in case foes not found (0 foes), rescan some times
-    #while numFoeScans < 10 and len(foeList) == 0:
+    #rescan until foes found (len foeList > 0)
     while len(foeList) == 0:
-        foeList = Battle.createFoes(buttonLocsDict)
-    #...and if numFoes still 0, pause for input
-    if len(foeList) == 0:
-        input("No foes found, check the Coliseum--press enter to resume")
-        time.sleep(5)
+        foeList = Battle.createFoes(buttonLocsDict, foeHpThreshhold)
 
     #This should only be done at the start of the FIRST battle
     #The unit may have lost some HP after the first battle, but

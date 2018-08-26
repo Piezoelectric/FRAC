@@ -234,12 +234,16 @@ def createDragons(configDragons, buttonLocsDict):
 #their MP bar looks the same
 #That having been said, since this is only run at start of battle,
 #This measure may be unnecessary. But it works as-is.
-def createFoes(buttonLocsDict):
+def createFoes(buttonLocsDict, inputThresh=None):
+    #print("DEBUG: inputThresh == " + str(inputThresh))
+    
     """At battlestart, locate Foes based on MP bars,
     and create Foe objects.
 
     Parameters: 
     dict buttonLocsDict: (see loadBattle)
+    int/float inputThresh: (optional) use a custom foe HP threshhold
+    instead of the default in Units.py
     
     Returns: a list of Foe objects
     """
@@ -270,9 +274,13 @@ def createFoes(buttonLocsDict):
         hpLoc = (loc[0], loc[1]-loc[3]-3, loc[2], loc[3]+2)
         #Foe HP bars are a little above the MP bars (by 1 pixel)
         #and also a little wider
-        foeList.append(Foe(hpLoc = hpLoc, mpLoc = mpLoc,
-                           posKey = keybind[i],
-                           threshhold = .95)) #Only on tablet version (dont push)
+        if inputThresh == None:
+            foeList.append(Foe(hpLoc = hpLoc, mpLoc = mpLoc,
+                               posKey = keybind[i]))
+        else:
+            foeList.append(Foe(hpLoc = hpLoc, mpLoc = mpLoc,
+                               posKey = keybind[i],
+                               threshhold = inputThresh)) 
     return foeList
 
 #==============================================================================#

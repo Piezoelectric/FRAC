@@ -32,10 +32,10 @@ This defines your dragons (from top to bottom on the battle screen). Change role
 
 ```
 numBattles = 20
-venueIndex = 15
+venueIndex = 18
 ```
 
-This defines the number of battles, and the index of the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 venue you want to battle in. Indexes should start at 0, and indexes should include the next page buttons (so Next Page is index 15, Previous Page is index 16, Ghostlight Ruins is index 17)
+This defines the number of battles, and the index of the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 venue you want to battle in. Indexes should start at 0, and indexes should include the next page buttons (so Next Page is index 15, Previous Page is index 16, Harpy's Roost is index 17, Ghostlight Ruins is index 18)
 
 You should set your browser zoom level so the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 displays with no blurriness or aliasing, and so it fully displays without scrolling the browser window. Browsers, OSes, and monitors may display the coliseum canvas differently, but the actual elements of the coliseum canvas should look the same. 
 
@@ -66,6 +66,10 @@ As for using this over other services, this script only uses visual cues and key
 # Changelog
 
 (I developed the first few versions on a personal machine before porting my code to Github. The "published" version numbers also account for changes from previous personal versions.) I should also figure out a better location to put these notes.
+
+**Version 12.3 / 2018-11-05**
+
+* Changed the venue indexes to support the new Thunderhead Savanna.
 
 **Version 12.2 / 2018-08-26**
 

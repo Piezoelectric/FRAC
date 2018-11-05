@@ -104,20 +104,21 @@ def loadBattle(state, venueIndex, buttonLocsDict):
         "bloomingGrove",
         "forgottenCave",
         "bambooFalls",
+        "thunderheadSavanna",
         "redrockCove",
         "waterway",
         "arena",
         "volcanicVents",
         "rainsongJungle",
         "borealWood",
-        "crystalPools",
-        "harpysRoost", #index 14, end of first page
+        "crystalPools", #index 14, end of first page
         None, #This is the next page button
         None, #this is the previous page button
+        "harpysRoost", 
         "ghostlightRuins",
         "mire",
-        "kelpBeds",
-        "golemWorkshop" #DO NOT EVER DO THE GOLEM WORKSHOP
+        "golemWorkshop", #DO NOT EVER DO THE GOLEM WORKSHOP
+        "kelpBeds"
         ]
     
     if state == "mainMenu":
@@ -148,7 +149,7 @@ def loadBattle(state, venueIndex, buttonLocsDict):
             pyautogui.click(nextCenterX, nextCenterY)
             time.sleep(3)
 
-        venueLoc = pyautogui.locateOnScreen(venueName+".png",
+        venueLoc = pyautogui.locateOnScreen("venues/"+venueName+".png",
             region = buttonLocsDict["venueLoc"])
         venueCenterX, venueCenterY = pyautogui.center(venueLoc)
         pyautogui.click(venueCenterX, venueCenterY)

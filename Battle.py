@@ -1,4 +1,5 @@
 import pyautogui 
+import pyautogui_ext
 import time
 import operator
 
@@ -41,7 +42,7 @@ def extrapolateButtonLocs(venueIndex):
     buttonLocsDict = {}
 
     #From the focus, obtain the coliseum canvas/region of interest
-    focus = pyautogui.locateOnScreen("monsterBattle.png")
+    focus = pyautogui_ext.safeLocateOnScreen("monsterBattle.png")
     buttonLocsDict["monsterBattleButtonLoc"] = focus
     canvasLoc = (focus[0]-100, focus[1]-375, 800, 600)
     buttonLocsDict["canvasLoc"] = canvasLoc
@@ -123,7 +124,7 @@ def loadBattle(state, venueIndex, buttonLocsDict):
     
     if state == "mainMenu":
         #Click seizure warning, if it exists
-        #seizureWarningLoc = pyautogui.locateOnScreen("seizureWarning.png")
+        #seizureWarningLoc = pyautogui_ext.safeLocateOnScreen("seizureWarning.png")
         #if bool(seizureWarningLoc):
         #    seizeCenterX, seizeCenterY = pyautogui.center(seizureWarningLoc)
         #    pyautogui.click(seizeCenterX, seizeCenterY)
@@ -131,7 +132,7 @@ def loadBattle(state, venueIndex, buttonLocsDict):
 
         #From main menu click Monster battle button
         #Monster Battle button glows when moused over. be careful!
-        buttonLoc = pyautogui.locateOnScreen("monsterBattle.png",
+        buttonLoc = pyautogui_ext.safeLocateOnScreen("monsterBattle.png",
             region = buttonLocsDict["monsterBattleButtonLoc"])
         buttonCenterX, buttonCenterY = pyautogui.center(buttonLoc)
         pyautogui.click(buttonCenterX, buttonCenterY)
@@ -143,13 +144,13 @@ def loadBattle(state, venueIndex, buttonLocsDict):
 
         if venueIndex > 14: #it's not on current page, go to next page
             print("On venue select, skipping to next page")
-            nextButtonLoc = pyautogui.locateOnScreen("venueNext.png",
+            nextButtonLoc = pyautogui_ext.safeLocateOnScreen("venueNext.png",
                 region = buttonLocsDict["venueNextPageLoc"])
             nextCenterX, nextCenterY = pyautogui.center(nextButtonLoc)
             pyautogui.click(nextCenterX, nextCenterY)
             time.sleep(3)
 
-        venueLoc = pyautogui.locateOnScreen("venues/"+venueName+".png",
+        venueLoc = pyautogui_ext.safeLocateOnScreen("venues/"+venueName+".png",
             region = buttonLocsDict["venueLoc"])
         venueCenterX, venueCenterY = pyautogui.center(venueLoc)
         pyautogui.click(venueCenterX, venueCenterY)
@@ -157,7 +158,7 @@ def loadBattle(state, venueIndex, buttonLocsDict):
     elif state == "normal":
         #both victory and defeat have a fightOn button which we locate on,
         #conveniently in the same location
-        buttonLoc = pyautogui.locateOnScreen("fightOn.png", 
+        buttonLoc = pyautogui_ext.safeLocateOnScreen("fightOn.png", 
             region = buttonLocsDict["fightOnButtonLoc"])
         buttonCenterX, buttonCenterY = pyautogui.center(buttonLoc)
         pyautogui.click(buttonCenterX, buttonCenterY)

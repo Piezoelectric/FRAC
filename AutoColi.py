@@ -1,4 +1,5 @@
 import pyautogui
+import pyautogui_ext
 import time
 
 import Battle
@@ -41,17 +42,17 @@ import Battle
 configDragons = [
     ["grinder", "s"],
     ["grinder", "s"],
-    ["grinder", "a"] 
+    ["trainee", "a"] 
     ]
 
-numBattles = 35
-venueIndex = 2
+numBattles = 17
+venueIndex = 18
 
 #Use coordinate math instead of fullscreen search
 fastMode = True
 
 #Enable if enemies are weak/low-level, and can be instantly Eliminated
-instantEliminate = True
+instantEliminate = False
 
 #==============================================================================#
 #    Main

@@ -28,7 +28,7 @@ configDragons = [
     ]
 ```
 
-This defines your dragons (from top to bottom on the battle screen). Change role between "grinder" and "trainee". The second parameter is the dragon's hotkey for Eliminate. Trainees should not set an Eliminate hotkey. 
+This defines your dragons (from top to bottom on the battle screen). Change role between "grinder" and "trainee". The second parameter is the dragon's hotkey for Eliminate. Trainees can set an Eliminate hotkey but it won't be used.
 
 ```
 numBattles = 20
@@ -66,6 +66,10 @@ As for using this over other services, this script only uses visual cues and key
 # Changelog
 
 (I developed the first few versions on a personal machine before porting my code to Github. The "published" version numbers also account for changes from previous personal versions.) I should also figure out a better location to put these notes.
+
+**Version 12.4 / 2018-12-23**
+
+Updated to use [pyautogui_ext](https://github.com/Piezoelectric/PyAutoGui-Extensions). If you don't like pyautogui_ext (which is reasonable I guess), you can change all pyautogui_ext.function() calls back to pyautogui, since they're named similarly.
 
 **Version 12.3 / 2018-11-05**
 

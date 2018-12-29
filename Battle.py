@@ -60,7 +60,7 @@ def extrapolateButtonLocs(venueIndex):
     #Set other loc-regions
     buttonLocsDict["fightOnButtonLoc"] = (canvasLoc[0]+520, canvasLoc[1]+450, 175, 110)
     buttonLocsDict["venueNextPageLoc"] = (canvasLoc[0]+540, canvasLoc[1]+425, 175, 120)
-    buttonLocsDict["captchaLoc"] = (canvasLoc[0]+250, canvasLoc[1]+10, 250, 75)
+    buttonLocsDict["captchaLoc"] = (canvasLoc[0]+250, canvasLoc[1]-20, 250, 100)
     buttonLocsDict["lowerLeftQuad"] = (canvasLoc[0], canvasLoc[1]+300, 400, 300)
     buttonLocsDict["upperRightQuad"] = (canvasLoc[0]+400, canvasLoc[1], 400, 300)
 

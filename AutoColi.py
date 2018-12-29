@@ -42,17 +42,20 @@ import Battle
 configDragons = [
     ["grinder", "s"],
     ["grinder", "s"],
-    ["trainee", "a"] 
+    ["grinder", "a"] 
     ]
 
-numBattles = 17
-venueIndex = 18
+numBattles = 50
+venueIndex = 2
+
+#Enable to save captchas (require fastmode)
+captchaLogging = True
 
 #Use coordinate math instead of fullscreen search
 fastMode = True
 
 #Enable if enemies are weak/low-level, and can be instantly Eliminated
-instantEliminate = False
+instantEliminate = True
 
 #==============================================================================#
 #    Main
@@ -93,14 +96,14 @@ for i in range(numBattles):
     #==========================================================================#
     #    Perform a single battle
     #Loads the next battle depending on how the previous battle ended ('state').
+    #States: "normal" (victory or defeat, click fightOn),
+    #"lowHp" (causes the page to refresh and redirect to main menu),
+    #"mainMenu" (navigate the menu to the venue)
     #==========================================================================#
 
     print("Loading battle with state " + state)
-    if state == "normal":
-        Battle.loadBattle(state, venueIndex, buttonLocsDict)
-    elif state == "lowHp" or state == "mainMenu":
-        Battle.loadBattle(state, venueIndex, buttonLocsDict)
-        
+    Battle.loadBattle(state, venueIndex, buttonLocsDict)
+   
     time.sleep(2) #may need to wait for the battle to load in
 
     #==========================================================================#
@@ -115,7 +118,43 @@ for i in range(numBattles):
     if instantEliminate == True:
         foeHpThreshhold = 1
 
+    #Captchas appear before a battle starts.
+    #If captchaLogging is enabled, this code saves the captcha to disk,
+
+    if captchaLogging and buttonLocsDict["captchaLoc"] and buttonLocsDict["canvasLoc"]:
+        print("DEBUG: captchaLogging active",
+              str(buttonLocsDict["captchaLoc"]))
+        coords = pyautogui.locateOnScreen("camping.png",
+                                          region=buttonLocsDict["captchaLoc"])
+        coords2 = pyautogui.locateOnScreen("campingZoomed.png",
+                                          region=buttonLocsDict["captchaLoc"])
+        #account for both zoom levels
+        
+        if coords or coords2: #if captcha was found, i.e. coords not (0,0)
+            print("DEBUG: captcha found")
+            epochTime = str(time.time()).split('.')[0] #gets seconds since epoch start
+
+            centerOfColi = pyautogui.center(buttonLocsDict["canvasLoc"])
+            pyautogui.click(x=centerOfColi[0], y=centerOfColi[1], button='right')
+            pyautogui.press(['v', 'enter']) #navs to "save image as" in menu
+            time.sleep(0.3)
+            
+            pyautogui.typewrite(epochTime+".png") #enter image filename
+            time.sleep(0.3)
+            pyautogui.press('enter')
+
+            #user has solved captcha so while loop exited;
+            #record user's mouse position and save
+            #What about the problem of user solves the first captcha incorrectly?? -TODO
+            #solution = pyautogui.position()
+            print("DEBUG: captcha saved, proceeding")
+
     #rescan until foes found (len foeList > 0)
+    #Notably, foes only appear after captcha is solved.
+    #So this loop acts as a backup "captcha check".
+    #the program will never proceed until the captcha is solved,
+    #since no enemies are loaded/can be found,
+    #and will automatically proceed once the captcha is solved
     while len(foeList) == 0:
         foeList = Battle.createFoes(buttonLocsDict, foeHpThreshhold)
 

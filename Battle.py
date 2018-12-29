@@ -3,6 +3,8 @@ import pyautogui_ext
 import time
 import operator
 
+from datetime import datetime
+
 from Units import *
 
 #==============================================================================#
@@ -395,3 +397,10 @@ def getActiveFoe(foeList, searchForWeak = False):
                 return i
     return -1
 
+#==============================================================================#
+#    MISC
+#==============================================================================#
+def nowStr():
+    d = datetime.now()
+    fieldStrs = [str(elem) for elem in [d.year, d.month, d.day, d.hour, d.minute, d.second]]
+    return "-".join(fieldStrs)

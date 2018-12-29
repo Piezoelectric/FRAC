@@ -4,6 +4,9 @@ import time
 
 import Battle
 
+from PIL import Image, ImageOps, ImageEnhance
+import pytesseract
+
 #==============================================================================#
 #    NOTES
 
@@ -42,27 +45,55 @@ import Battle
 configDragons = [
     ["grinder", "s"],
     ["grinder", "s"],
-    ["trainee", "a"] 
+    ["grinder", "a"] 
     ]
 
-numBattles = 17
-venueIndex = 18
+numBattles = 50
+venueIndex = 2
 
 #Use coordinate math instead of fullscreen search
 fastMode = True
 
+#Enable if you want to log data (slows program execution, requires fastmode)
+#Needs debugging or removal tbh
+dataLogging = False
+
+#Enable if you want to log enemy names (slows program exec, requires fast)
+logNames = False
+
+#For datalogging, specify location of tesseract.exe
+pytesseract.pytesseract.tesseract_cmd = "C:\\Program Files (x86)\\Tesseract-OCR\\tesseract.exe"
+
+#Enable to track specific items and how frequently they drop
+drops = [
+    "drops/StrangeChest.png",
+    "drops/leporidaeGuise.png",
+    "drops/giantCaterpillar.png",
+    "drops/hourglass.png",
+    "drops/beeOrchid.png"
+    ]
+
 #Enable if enemies are weak/low-level, and can be instantly Eliminated
-instantEliminate = False
+instantEliminate = True
 
 #==============================================================================#
 #    Main
 #Perform some initial setup
 #==============================================================================#
 
-print("Bring up battle window within 5 seconds")
-time.sleep(5)
+print("Starting the program")
 
 state = "mainMenu"
+
+if dataLogging:
+    now = Battle.nowStr()
+    logFileHandle = open("logs/"+now+".csv", 'w')
+    logFileHandle.write("Start Time,")
+    logFileHandle.write("Foes,")
+    for d in drops:
+        logFileHandle.write(d+",")
+    logFileHandle.write("Venue #,"+str(venueIndex))
+    logFileHandle.write("\n")
 
 #Every entry is a SEARCH REGION for the button,
 #not necessarily the direct coordinate of the button;
@@ -129,6 +160,53 @@ for i in range(numBattles):
             dragonList = Battle.createDragons(configDragons, buttonLocsDict)
         for d in dragonList:
             print(d)
+
+    if dataLogging and buttonLocsDict["upperRightQuad"]:
+        #If datalogging enabled and coordinates of upperRightQuad have been set,
+        #log start time.
+        startTime = Battle.nowStr()
+        logFileHandle.write(startTime+",")
+    
+        if logNames: 
+            #filename = "logs//"+startTime+"-Start.png" #Debugging
+            #pyautogui.screenshot(filename, region=buttonLocsDict["upperRightQuad"])
+
+            #Log each enemy's name
+            for foe in foeList:
+                foeNameRegion = (foe.mpLoc[0] - 50,
+                                 foe.mpLoc[1] - 30,
+                                 120, #Lmao I am just guessing
+                                 15)
+                print(foeNameRegion)
+                foeNameScreenShot = pyautogui.screenshot(region=foeNameRegion)
+
+                #Enhance screenshot so tesseract has an easier time working w it
+                #foeNameScreenShot.show()
+
+                foeNameScreenShot = foeNameScreenShot.resize((600,75),
+                                                             resample=Image.BICUBIC)
+                foeNameScreenShot = ImageOps.invert(foeNameScreenShot)
+                brightener = ImageEnhance.Brightness(foeNameScreenShot)
+                foeNameScreenShot = brightener.enhance(1.5)
+                contraster = ImageEnhance.Contrast(foeNameScreenShot)
+                foeNameScreenShot = contraster.enhance(2)
+
+                #foeNameScreenShot.show()
+
+                #Pass the enhanced screenshot to tesseract for analysis
+                foeName = pytesseract.image_to_string(foeNameScreenShot, config="--psm 7")
+
+                #Write text to file (remove any stray commas)
+                text = "".join(char for char in foeName if char != ',')
+                logFileHandle.write(text+";")
+                print(text)
+        else: #do not log names
+            logFileHandle.write("--")
+            pass
+    
+        #Move on to next log field
+        logFileHandle.write(",")
+    #end logging function     
 
     print("Begin Battle [" + str(i) + "]")
     print("Number of dragons: " + str(len(dragonList)))
@@ -214,9 +292,38 @@ for i in range(numBattles):
     #so the battle has ended for one reason or another
     #Jump back up to top of for loop
     #==========================================================================#
+
+    #If datalogging enabled and coordinates of upperRightQuad have been set,
+    #capture battle end/loot drops
+    if dataLogging and buttonLocsDict["upperRightQuad"]:
+        filename = "logs/"+startTime+"-End.png"
+        #pyautogui.screenshot(filename, region=buttonLocsDict["upperRightQuad"])
+
+        for d in drops:
+            located = pyautogui.locateOnScreen(d, region=buttonLocsDict["upperRightQuad"])
+            if located: #Determine how many of that item was dropped
+                located2 = (located[0], located[1], 50, 50)
+                twoLocated = pyautogui.locateOnScreen("2items.png", region=located2)
+                threeLocated = pyautogui.locateOnScreen("3items.png", region=located2)
+                if twoLocated:
+                    logFileHandle.write("2,")
+                elif threeLocated:
+                    logFileHandle.write("3,")
+                else:
+                    logFileHandle.write("1,")
+            else:
+                logFileHandle.write("0,")
+
+        logFileHandle.write("\n")
+        logFileHandle.flush()
+        
+    
     print("----------")
 
 #==============================================================================#
 #    End For Loop
 #==============================================================================#
 print("Finished all battles.")
+
+if dataLogging:
+    logFileHandle.close()

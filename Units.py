@@ -32,22 +32,37 @@ class Unit:
 
 class Foe(Unit):
     def __init__(self, hpLoc=(0,0,0,0), mpLoc = (0,0,0,0),
-                 threshhold = .95, posKey = None):
+                 threshhold = .95, posKey = None, element=None):
         super().__init__(hpLoc, mpLoc, threshhold)
         self.posKey = posKey #positional keybind of enemy
+        self.element = element
 
     def isHpLow(self):
         if self.threshhold == 1: #Foes can be instantly eliminated
-            print("DEBUG: Foe using instant-kill threshhold")
+            #print("DEBUG: Foe using instant-kill threshhold")
             return True
         else:
-            print("DEBUG: Foe using regular threshhold")
-            return super().isHpLow() #hopefully this works
+            #print("DEBUG: Foe using regular threshhold")
+            return super().isHpLow() 
         
     def isAlive(self):
         #if foeMP not found in known foeMP coordinates, unit is dead;
         #img is None
         img = pyautogui.locateOnScreen("foeMP.png", region=self.mpLoc)
+        return bool(img)
+
+    def isElement(self, elem):
+        '''
+        Optional method for analyzing if a foe is ELEM element.
+        Only called when enemy logging is enabled;
+        does not affect battle performance.
+
+        Parameters:
+        -elem -- string containing just the element, e.g. "ice" or "neutral"
+        '''
+        elementSearchRegion = (self.mpLoc[0]-30, self.mpLoc[1]-30, 60, 60)
+        filename = "./icons/"+elem+".png"
+        img = pyautogui.locateOnScreen(filename, region=elementSearchRegion)
         return bool(img)
 
 class Dragon(Unit):

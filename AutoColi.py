@@ -4,6 +4,10 @@ import time
 
 import Battle
 
+from PIL import ImageFont
+from PIL import Image
+from PIL import ImageDraw #For debugging logging features
+
 #==============================================================================#
 #    NOTES
 
@@ -45,14 +49,26 @@ configDragons = [
     ["grinder", "a"] 
     ]
 
-numBattles = 50
+numBattles = 5
 venueIndex = 2
+
+#Use coordinate math instead of fullscreen search
+fastMode = True
 
 #Enable to save captchas (require fastmode)
 captchaLogging = True
 
-#Use coordinate math instead of fullscreen search
-fastMode = True
+#Enable to log enemy types/elements (for coliseum fest grinding)
+enemyLogging = True
+enemyElement = "ice"
+
+#Enable to log drops (Not Implemented Yet)
+dropLogging = True
+drops = [
+    "eternalSnow2",
+    "greenFish",
+    "bunny"
+    ]
 
 #Enable if enemies are weak/low-level, and can be instantly Eliminated
 instantEliminate = True
@@ -62,10 +78,19 @@ instantEliminate = True
 #Perform some initial setup
 #==============================================================================#
 
-print("Bring up battle window within 5 seconds")
-time.sleep(5)
+print("Main program started")
 
 state = "mainMenu"
+
+if enemyLogging:
+    enemyLogHandle = open("enemies.csv", "a+")
+    enemyLogHandle.write("Battle,"+enemyElement+",Neutral,Neither\n")
+if dropLogging:
+    dropLogHandle = open("drops.csv", "a+")
+    dropLogHandle.write("Battle,")
+    for d in drops:
+        dropLogHandle.write(d+",")
+    dropLogHandle.write("\n")
 
 #Every entry is a SEARCH REGION for the button,
 #not necessarily the direct coordinate of the button;
@@ -122,8 +147,6 @@ for i in range(numBattles):
     #If captchaLogging is enabled, this code saves the captcha to disk,
 
     if captchaLogging and buttonLocsDict["captchaLoc"] and buttonLocsDict["canvasLoc"]:
-        print("DEBUG: captchaLogging active",
-              str(buttonLocsDict["captchaLoc"]))
         coords = pyautogui.locateOnScreen("camping.png",
                                           region=buttonLocsDict["captchaLoc"])
         coords2 = pyautogui.locateOnScreen("campingZoomed.png",
@@ -131,7 +154,7 @@ for i in range(numBattles):
         #account for both zoom levels
         
         if coords or coords2: #if captcha was found, i.e. coords not (0,0)
-            print("DEBUG: captcha found")
+            print("[CAPTCHA] Captcha found")
             epochTime = str(time.time()).split('.')[0] #gets seconds since epoch start
 
             centerOfColi = pyautogui.center(buttonLocsDict["canvasLoc"])
@@ -140,24 +163,61 @@ for i in range(numBattles):
             time.sleep(0.3)
             
             pyautogui.typewrite(epochTime+".png") #enter image filename
-            time.sleep(0.3)
-            pyautogui.press('enter')
+            time.sleep(1)
+            pyautogui.press(['enter'])
+            time.sleep(.3)
+            pyautogui.press(['enter'])
 
             #user has solved captcha so while loop exited;
             #record user's mouse position and save
             #What about the problem of user solves the first captcha incorrectly?? -TODO
             #solution = pyautogui.position()
-            print("DEBUG: captcha saved, proceeding")
+            print("[CAPTCHA] saved, proceeding")
 
-    #rescan until foes found (len foeList > 0)
+    #rescan until foes found (len foeList > 0);
+    #Battle.createFoes creates foes and assigns their hotkey.
     #Notably, foes only appear after captcha is solved.
     #So this loop acts as a backup "captcha check".
     #the program will never proceed until the captcha is solved,
-    #since no enemies are loaded/can be found,
-    #and will automatically proceed once the captcha is solved
+    #since no enemies are loaded/can be found.
     while len(foeList) == 0:
         foeList = Battle.createFoes(buttonLocsDict, foeHpThreshhold)
 
+    #If datalogging is enabled,
+    #search near foe MP bars to find foe's element
+    #Shuodl prolly move this code into Battle tbh
+    if enemyLogging:
+        #Determine what types of foes are onscreen
+        numElemental = 0
+        numNeutral = 0
+        numNeither = 0
+        for foe in foeList:
+            isUserElement = foe.isElement(enemyElement)
+            isNeutral = foe.isElement("neutral")
+
+            if isUserElement:
+                foe.element = enemyElement
+                numElemental +=1
+            elif isNeutral:
+                foe.element = "neutral"
+                numNeutral += 1
+            else:
+                numNeither += 1
+
+        #Write info to file
+        enemyLogHandle.write(str(i) + "," + str(numElemental) + ","
+                             + str(numNeutral) + "," + str(numNeither) + "\n")
+        enemyLogHandle.flush()
+
+        #Debugging datalogging
+        if True:
+            filename = "./logs/"+str(time.time()).split('.')[0]+".png"
+            img = pyautogui.screenshot(region=buttonLocsDict["upperRightQuad"])
+            draw = ImageDraw.Draw(img)
+            font = ImageFont.truetype("./fonts/arial.ttf", 24)
+            draw.text((0, 0), str([foe.element for foe in foeList]), (0,0,0))
+            img.save(filename)
+        
     #This should only be done at the start of the FIRST battle
     #The unit may have lost some HP after the first battle, but
     #its HP coords are still known. dragons dont move.
@@ -209,7 +269,7 @@ for i in range(numBattles):
         #Since the battle is not over, make an attack
         #======================================================================#
         readyDragonIndex = Battle.getReadyDragon(dragonList)
-        print("readyDragonIndex == " + str(readyDragonIndex))
+        #print("readyDragonIndex == " + str(readyDragonIndex))
 
         #No dragons ready --> foe attacking
         if readyDragonIndex == -1:
@@ -251,11 +311,52 @@ for i in range(numBattles):
     #    Battle End
     #The while loop of endless turns is over,
     #so the battle has ended for one reason or another
-    #Jump back up to top of for loop
     #==========================================================================#
+    if dropLogging:
+        dropLog = []
+
+        #Read screen to determine what dropped
+        for drop in drops:
+            filename = "./drops/"+drop+".png"
+            img = pyautogui.locateOnScreen(filename,
+                                        region=buttonLocsDict["upperRightQuad"])
+
+            if img: #This item dropped, how many did it drop?
+                dropCountRegion = (img[0], img[1], 80, 80)
+                twoItems = pyautogui.locateOnScreen("2items.png",
+                                                    region = dropCountRegion)
+                threeItems = pyautogui.locateOnScreen("3items.png",
+                                                      region = dropCountRegion)
+                if twoItems:
+                    dropLog.append((drop, 2))
+                elif threeItems:
+                    dropLog.append((drop, 3))
+                else:
+                    dropLog.append((drop, 1))
+            else: #no drop
+                dropLog.append((drop, 0))
+
+        #Write drop info to file
+        dropLogHandle.write(str(i)+",")
+        for d in dropLog:
+            dropLogHandle.write(str(d[1])+",")
+        dropLogHandle.write("\n")
+        dropLogHandle.flush()
+            
+        #Debugging dropLogging
+        if True:
+            filename = "./logs/"+str(time.time()).split('.')[0]+".png"
+            img = pyautogui.screenshot(region=buttonLocsDict["upperRightQuad"])
+            draw = ImageDraw.Draw(img)
+            font = ImageFont.truetype("./fonts/arial.ttf", 24)
+            draw.text((0, 0), str(dropLog), (0,0,0))
+            img.save(filename)
+
     print("----------")
 
 #==============================================================================#
 #    End For Loop
 #==============================================================================#
+enemyLogHandle.close()
+dropLogHandle.close()
 print("Finished all battles.")

@@ -18,6 +18,8 @@ Get some level 25 dragons. I don't know or care how. Follow one of the physical 
 
 Set up the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 to enable keyboard hotkeys, and disable animations and visual effects.
 
+Download this repo as a zipfile and unzip it. Be sure to download [pyautogui_ext](https://github.com/Piezoelectric/PyAutoGui-Extensions) as well, and place that in the same directory.
+
 In `AutoColi.py`, find the following lines:
 
 ```
@@ -37,7 +39,7 @@ venueIndex = 18
 
 This defines the number of battles, and the index of the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 venue you want to battle in. Indexes should start at 0, and indexes should include the next page buttons (so Next Page is index 15, Previous Page is index 16, Harpy's Roost is index 17, Ghostlight Ruins is index 18)
 
-You should set your browser zoom level so the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 displays with no blurriness or aliasing, and so it fully displays without scrolling the browser window. Browsers, OSes, and monitors may display the coliseum canvas differently, but the actual elements of the coliseum canvas should look the same. 
+You should set your browser zoom level so the 𝓒𝓸𝓵𝓲𝓼𝓮𝓾𝓶 displays with no blurriness or aliasing, and so it fully displays without scrolling the browser window. Browsers, OSes, and monitors may display the coliseum canvas differently, but the actual elements of the coliseum canvas should look the same. You can use Glimm/Gloom to help adjust; the GG window should be 700 pixels wide, 600 px tall.
 
 If stuff isn't working, try replacing each of the images in the directory with a screenshot from _your_ browser. 
 
@@ -46,6 +48,18 @@ fastMode = True
 ```
 
 Enables/disables fast mode. Normal mode searches the entire screen for buttons and other features (the fight on button, unit HP bars, etc). Fast mode uses coordinate math to restrict the search area to a small region, and in some cases it directly locates the buttons without searching. Coordinate math may break depending on your screen settings, but it's much faster than searching the entire screen repeatedly.
+
+```
+captchaLogging = True
+```
+
+Enables/disables saving captchas to disk. Requires fastmode. (Only saves the first captcha. Does not record solution to captcha.)
+
+```
+instantEliminate = True
+```
+
+If a foe is low-level, a unit can use eliminate on it without using scratch first. Setting `instantEliminate` to True bypasses the scratch step and directly uses eliminate. Under the hood, it sets the "foe is in eliminate range" threshhold to 100% of its HP.
 
 ## Running
 

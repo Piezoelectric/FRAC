@@ -53,7 +53,20 @@ Enables/disables fast mode. Normal mode searches the entire screen for buttons a
 captchaLogging = True
 ```
 
-Enables/disables saving captchas to disk. Requires fastmode. (Only saves the first captcha. Does not record solution to captcha.)
+Enables/disables saving captchas to disk. Requires fastmode. (Only saves the first captcha attempt, and not failed attempts. Does not record solution to captcha.)
+
+```enemyLogging```
+
+Enables/disables logging what types the enemies are. Note: does not record the enemy names. Records the number of neutral enemies per battle, the number of enemies matching a user-specified type (e.g. Ice for the ice holiday), and the number of enemies which are neither.
+
+```dropLogging = True
+drops = [
+    "eternalSnow2",
+    "greenFish",
+    "bunny"
+    ]```
+
+Enables/disables logging what drops after a battle. Specify which items you want to log by putting them in the drops list, and adding screenshots of the items to the `./drops` folder. (Note: be VERY CAREFUL about how you crop your screenshots. The number in the lower right, indicating how many dropped, can interfere with drop detection. If you include too much of the lower right corner in a screenshot of an item drop, then when multiples of that item drop, the lower right corner will be covered by the number. Then the program will fail to recognize the item, because the lower right corner on screen doesn't match what's stored on disk.)
 
 ```
 instantEliminate = True
@@ -80,6 +93,10 @@ As for using this over other services, this script only uses visual cues and key
 # Changelog
 
 (I developed the first few versions on a personal machine before porting my code to Github. The "published" version numbers also account for changes from previous personal versions.) I should also figure out a better location to put these notes.
+
+**Version 13 / 2019-01-27**
+
+Added Enemy Type Logging and Drop Logging (described above).
 
 **Version 12.5 / 2018-12-28**
 

@@ -62,7 +62,7 @@ captchaLogging = True
 enemyLogging = True
 enemyElement = "ice"
 
-#Enable to log drops (Not Implemented Yet)
+#Enable to log drops
 dropLogging = True
 drops = [
     "eternalSnow2",

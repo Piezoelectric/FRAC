@@ -98,7 +98,7 @@ As for using this over other services, this script only uses visual cues and key
 
 **Version 13 / 2019-01-27**
 
-Added Enemy Type Logging and Drop Logging (described above).
+Added Enemy Type Logging and Drop Logging (described above). Touched on Jan 29 to improve the logfile a little bit.
 
 **Version 12.5 / 2018-12-28**
 

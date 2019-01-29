@@ -50,7 +50,7 @@ configDragons = [
     ]
 
 numBattles = 5
-venueIndex = 2
+venueIndex = 13
 
 #Use coordinate math instead of fullscreen search
 fastMode = True
@@ -65,28 +65,36 @@ enemyElement = "ice"
 #Enable to log drops
 dropLogging = True
 drops = [
-    "eternalSnow2",
-    "greenFish",
-    "bunny"
+    "eternalSnow",
     ]
 
 #Enable if enemies are weak/low-level, and can be instantly Eliminated
-instantEliminate = True
+instantEliminate = False
 
 #==============================================================================#
 #    Main
 #Perform some initial setup
 #==============================================================================#
 
+def epochTime():
+    '''Return seconds since epoch as a string;
+    used for filenames.
+    Parameters: None'''
+    return str(time.time()).split('.')[0] 
+
 print("Main program started")
 
 state = "mainMenu"
 
 if enemyLogging:
-    enemyLogHandle = open("enemies.csv", "a+")
+    filename = epochTime()+"-enemies.csv"
+    enemyLogHandle = open(filename, "a+")
+    enemyLogHandle.write("Venue,"+str(venueIndex)+"\n")
     enemyLogHandle.write("Battle,"+enemyElement+",Neutral,Neither\n")
 if dropLogging:
-    dropLogHandle = open("drops.csv", "a+")
+    filename = epochTime()+"-drops.csv"
+    dropLogHandle = open(filename, "a+")
+    dropLogHandle.write("Venue,"+str(venueIndex)+"\n")
     dropLogHandle.write("Battle,")
     for d in drops:
         dropLogHandle.write(d+",")
@@ -155,14 +163,13 @@ for i in range(numBattles):
         
         if coords or coords2: #if captcha was found, i.e. coords not (0,0)
             print("[CAPTCHA] Captcha found")
-            epochTime = str(time.time()).split('.')[0] #gets seconds since epoch start
 
             centerOfColi = pyautogui.center(buttonLocsDict["canvasLoc"])
             pyautogui.click(x=centerOfColi[0], y=centerOfColi[1], button='right')
             pyautogui.press(['v', 'enter']) #navs to "save image as" in menu
             time.sleep(0.3)
             
-            pyautogui.typewrite(epochTime+".png") #enter image filename
+            pyautogui.typewrite(epochTime()+".png") #enter image filename
             time.sleep(1)
             pyautogui.press(['enter'])
             time.sleep(.3)
@@ -210,7 +217,7 @@ for i in range(numBattles):
         enemyLogHandle.flush()
 
         #Debugging datalogging
-        if True:
+        if False:
             filename = "./logs/"+str(time.time()).split('.')[0]+".png"
             img = pyautogui.screenshot(region=buttonLocsDict["upperRightQuad"])
             draw = ImageDraw.Draw(img)
@@ -305,7 +312,7 @@ for i in range(numBattles):
 
             time.sleep(0.25) #Allow dragon's attack anim to finish
 
-        print("Battle Turn completed")
+        #print("Battle Turn completed")
 
     #==========================================================================#
     #    Battle End
@@ -344,7 +351,7 @@ for i in range(numBattles):
         dropLogHandle.flush()
             
         #Debugging dropLogging
-        if True:
+        if False:
             filename = "./logs/"+str(time.time()).split('.')[0]+".png"
             img = pyautogui.screenshot(region=buttonLocsDict["upperRightQuad"])
             draw = ImageDraw.Draw(img)
@@ -356,7 +363,10 @@ for i in range(numBattles):
 
 #==============================================================================#
 #    End For Loop
+#All battles are now over.
 #==============================================================================#
-enemyLogHandle.close()
-dropLogHandle.close()
+if enemyLogging:
+    enemyLogHandle.close()
+if dropLogging:
+    dropLogHandle.close()
 print("Finished all battles.")

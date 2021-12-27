@@ -105,7 +105,7 @@ def loadBattle(state, venueIndex, buttonLocsDict):
     if state == "mainMenu":
         #From main menu click Monster battle button
         #Monster Battle button glows when moused over. 
-        buttonLoc = buttonLocsDict["monsterBattleButtonLoc"] or pyautogui.locateOnScreen("monsterBattle.png")
+        buttonLoc = buttonLocsDict["monsterBattleButtonLoc"] or pyautogui.locateOnScreen("./monsterBattle.PNG")
         buttonCenterX, buttonCenterY = pyautogui.center(buttonLoc)
         pyautogui.click(buttonCenterX, buttonCenterY)
         time.sleep(3)
@@ -116,7 +116,7 @@ def loadBattle(state, venueIndex, buttonLocsDict):
 
         if venueIndex > 14: #it's not on current page, go to next page
             print("On venue select, skipping to next page")
-            nextButtonLoc = buttonLocsDict["venueNextPageLoc"] or pyautogui.locateOnScreen("venueNext.png")
+            nextButtonLoc = buttonLocsDict["venueNextPageLoc"] or pyautogui.locateOnScreen("./venueNext.png")
             nextCenterX, nextCenterY = pyautogui.center(nextButtonLoc)
             pyautogui.click(nextCenterX, nextCenterY)
 
@@ -127,7 +127,7 @@ def loadBattle(state, venueIndex, buttonLocsDict):
     elif state == "normal":
         #both victory and defeat have a fightOn button which we locate on,
         #conveniently in the same location
-        buttonLoc = buttonLocsDict["fightOnButtonLoc"] or pyautogui.locateOnScreen("fightOn.png")
+        buttonLoc = buttonLocsDict["fightOnButtonLoc"] or pyautogui.locateOnScreen("./fightOn.PNG")
         buttonCenterX, buttonCenterY = pyautogui.center(buttonLoc)
         pyautogui.click(buttonCenterX, buttonCenterY)
 
@@ -270,7 +270,7 @@ def checkCaptcha(buttonLocsDict):
     dict buttonLocsDict: (see loadBattle)
     Returns: bool
     """
-    captchaPresence = pyautogui.locateOnScreen("camping.png")
+    captchaPresence = pyautogui.locateOnScreen("./camping.png")
     # if captchaPresence != None:
     #     input("Captcha detected, please solve then hit enter.")
     #     time.sleep(5)
@@ -290,7 +290,7 @@ def isBattleOver(buttonLocsDict):
     Returns: True if battle is over, False otherwise
     """
     
-    return bool(pyautogui.locateOnScreen("fightOn.png"))
+    return bool(pyautogui.locateOnScreen("./fightOn.PNG"))
 
 def getReadyDragon(dragonList):
     """During battleturns, check which dragon is ready, if any.
@@ -310,7 +310,7 @@ def getReadyDragon(dragonList):
                         150, 70)
         # print("DEBUG: searchRegion == " + str(searchRegion))
 
-        tempLoc = pyautogui.locateOnScreen("ready.png", region=searchRegion)
+        tempLoc = pyautogui.locateOnScreen("./ready.png", region=searchRegion)
         
         if bool(tempLoc) == True:
             return i

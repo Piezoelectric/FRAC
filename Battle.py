@@ -4,8 +4,7 @@ import pyautogui
 # Implements various battle logic modules.
 
 class BattleLogic:
-    def __init__(self, dragonList, foeList):
-        self.foeList = foeList
+    def __init__(self, dragonList):
         self.dragonList = dragonList
 
     def determineAction(self, readyDragonIndex):
@@ -19,10 +18,19 @@ class BattleLogic:
         Do we care if a dragon has the Ready status or not.
         '''
         return False
+    
+    def careAboutFoeList(self):
+        '''
+        Do we care about the foe list.
+        '''
+        return False
+
+    def setFoeList(self, foeList):
+        self.foeList = foeList
 
 class SpamLogic(BattleLogic):
-    def __init__(self, dragonList, foeList):
-        super().__init__(dragonList, foeList)
+    def __init__(self, dragonList):
+        super().__init__(dragonList)
 
     def determineAction(self, readyDragonIndex):
         d = self.dragonList[readyDragonIndex]
@@ -34,11 +42,14 @@ class SpamLogic(BattleLogic):
     def careAboutDragonReady(self):
         return False
 
+    def careAboutFoeList(self):
+        return False
+
 # TODO - fix this class. Something, SOMEWHERE, broke. Eugh.
 class BasicEliminateTrainerLogic(BattleLogic):
 
-    def __init__(self, dragonList, foeList):
-        super().__init__(dragonList, foeList)
+    def __init__(self, dragonList):
+        super().__init__(dragonList)
 
     def determineAction(self, readyDragonIndex):
         foeStatuses = Menu.checkFoes(self.foeList)
@@ -73,4 +84,7 @@ class BasicEliminateTrainerLogic(BattleLogic):
         return keyString
     
     def careAboutDragonReady(self):
+        return True
+
+    def careAboutFoeList(self):
         return True

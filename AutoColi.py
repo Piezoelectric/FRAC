@@ -131,15 +131,6 @@ for i in range(numBattles):
             #solution = pyautogui.position()
             print("[CAPTCHA] saved, proceeding")
 
-    #rescan until foes found (len foeList > 0);
-    #Menu.createFoes creates foes and assigns their hotkey.
-    #Notably, foes only appear after captcha is solved.
-    #So this loop acts as a backup "captcha check".
-    #the program will never proceed until the captcha is solved,
-    #since no enemies are loaded/can be found.
-    while len(foeList) == 0:
-        foeList = Menu.createFoes(buttonLocsDict, foeHpThreshhold)
-        
     #Dragon setup -- should only be done at the start of the first battle
     if i == 0:
         dragonList = []
@@ -150,11 +141,22 @@ for i in range(numBattles):
 
     #Logic module setup
     #battleLogicModule = BasicEliminateTrainerLogic(dragonList, foeList)
-    battleLogicModule = SpamLogic(dragonList, foeList)
+    battleLogicModule = SpamLogic(dragonList)
+
+    #rescan until foes found (len foeList > 0);
+    #Menu.createFoes creates foes and assigns their hotkey.
+    #Notably, foes only appear after captcha is solved.
+    #So this loop acts as a backup "captcha check".
+    #the program will never proceed until the captcha is solved,
+    #since no enemies are loaded/can be found.
+    while len(foeList) == 0 and battleLogicModule.careAboutFoeList():
+        "Initializing foe list"
+        foeList = Menu.createFoes(buttonLocsDict, foeHpThreshhold)
+        battleLogicModule.setFoeList(foeList)
 
     print("Begin Battle [" + str(i) + "]")
     print("Number of dragons: " + str(len(dragonList)))
-    print("Number of foes: " + str(len(foeList)))
+    print("Number of foes: %s"%(len(foeList) if foeList else "who cares"))
 
     #==========================================================================#
     #    Battle Active

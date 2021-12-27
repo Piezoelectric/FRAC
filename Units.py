@@ -15,7 +15,7 @@ import pyautogui
 #But with Blue instead of green
 #==============================================================================#
 
-#Private class, should never be used by actual things
+# Don't use this directly. Use Foe or Dragon instead. 
 class Unit:
     def __init__(self, hpLoc=(0,0,0,0), mpLoc = (0,0,0,0), threshhold = .5):
         self.hpLoc = hpLoc #Location of HP bar

@@ -210,3 +210,9 @@ for i in range(numBattles):
 #==============================================================================#
 
 print("Finished all battles.")
+
+
+# TODO LIST
+# - Refactor to read all config from a config.yml file
+# - Fix the broken BasicEliminateTrainerLogic to be less, uh, broken
+# - add a main() function and if name == __main__ 

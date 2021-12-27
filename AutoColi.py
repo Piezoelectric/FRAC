@@ -59,7 +59,7 @@ def epochTime():
 
 print("Main program started")
 
-state = "mainMenu"
+state = Menu.getStateFromScreen()
 
 buttonLocsDict = {
     "canvasLoc": None,
@@ -73,7 +73,7 @@ buttonLocsDict = {
     }
 
 if fastMode:
-    buttonLocsDict = Menu.extrapolateButtonLocs(venueIndex)
+    buttonLocsDict = Menu.extrapolateButtonLocs(state, venueIndex)
     print("Warning: fast mode enabled!")
     print(buttonLocsDict)
 else:
@@ -192,12 +192,13 @@ for i in range(numBattles):
         readyDragonIndex = Menu.getReadyDragon(dragonList)
 
         # No dragons ready --> foe attacking. Sometimes we don't care if the dragon is ready.
-        if readyDragonIndex == -1 and battleLogicModule.careAboutDragonReady():
+        # Though TBH that migh tbe worth refactoring?? TODO
+        if readyDragonIndex == -1:
             print("No dragons active, waiting")
-            time.sleep(1) #Allow foe animations to finish
+            time.sleep(0.25) #Allow foe animations to finish
             continue
 
-        # Dragon ready (or the ready check was ignored) --> have it make an action
+        # Dragon ready --> have it make an action
         keyString = battleLogicModule.determineAction(readyDragonIndex)
         print("keyString", keyString)
         pyautogui.typewrite(keyString, interval = 0.1) 
@@ -210,7 +211,6 @@ for i in range(numBattles):
 #    End For Loop
 #All battles are now over.
 #==============================================================================#
-
 print("Finished all battles.")
 
 

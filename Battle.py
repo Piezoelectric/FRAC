@@ -34,7 +34,7 @@ class SpamLogic(BattleLogic):
 
     def determineAction(self, readyDragonIndex):
         d = self.dragonList[readyDragonIndex]
-        if d.isElimReady():
+        if readyDragonIndex > -1 and d.isElimReady():
             return "a..%s..qwer"%d.elimKey
         else:
             return "a..e..qwer"

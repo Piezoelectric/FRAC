@@ -17,7 +17,7 @@ from Units import *
 #Used to restrict search spaces (instead of searching the entire screen)
 #==============================================================================#
 
-def extrapolateButtonLocs(venueIndex = 0):
+def extrapolateButtonLocs(state, venueIndex = 0):
     """Based on the location of the "Monster Battle" button, extrapolate the location of
     other important buttons. 
 
@@ -30,11 +30,20 @@ def extrapolateButtonLocs(venueIndex = 0):
     """
 
     buttonLocsDict = {}
+    canvasLoc = (0,0,0,0)
 
     #From the focus, obtain the coliseum canvas/region of interest
-    buttonLocsDict["monsterBattleButtonLoc"] = pyautogui.locateOnScreen("./monsterBattle.PNG", minSearchTime = 20)
-    focus = buttonLocsDict["monsterBattleButtonLoc"]
-    canvasLoc = (focus[0]-100, focus[1]-375, 800, 600)
+    if state == "mainMenu":
+        focus = pyautogui.locateOnScreen("./monsterBattle.PNG", minSearchTime = 20)
+        buttonLocsDict["monsterBattleButtonLoc"] = focus
+        canvasLoc = (focus[0]-100, focus[1]-375, 800, 600)
+    elif state == "normal":
+        focus = pyautogui.locateOnScreen("./fightOn.PNG", minSearchTime = 20)
+        buttonLocsDict["fightOnButtonLoc"] = focus
+        canvasLoc = (focus[0]-555, focus[1]-490, 800, 600)
+    else:
+        print("What the fuck")
+
     buttonLocsDict["canvasLoc"] = canvasLoc
 
     #Find location of the particular venue
@@ -48,13 +57,29 @@ def extrapolateButtonLocs(venueIndex = 0):
                                   200)
 
     #Set other loc-regions
-    buttonLocsDict["fightOnButtonLoc"] = (canvasLoc[0]+520, canvasLoc[1]+450, 175, 110)
     buttonLocsDict["venueNextPageLoc"] = (canvasLoc[0]+540, canvasLoc[1]+425, 175, 120)
     buttonLocsDict["captchaLoc"] = (canvasLoc[0]+250, canvasLoc[1]-20, 250, 100)
-    buttonLocsDict["lowerLeftQuad"] = (canvasLoc[0], canvasLoc[1]+300, 400, 300)
+    # buttonLocsDict["lowerLeftQuad"] = (canvasLoc[0], canvasLoc[1]+300, 400, 300)
     buttonLocsDict["upperRightQuad"] = (canvasLoc[0]+400, canvasLoc[1], 400, 300)
+    if state == "mainMenu":
+        buttonLocsDict["fightOnButtonLoc"] = (canvasLoc[0]+520, canvasLoc[1]+450, 175, 110)
+    elif state == "normal":
+        buttonLocsDict["monsterBattleButtonLoc"] = (canvasLoc[0]+100, canvasLoc[0]+375, 200, 200)
 
     return buttonLocsDict
+
+def getStateFromScreen():
+    """
+    Looks at the screen to get one of two battle states. Wow!
+    """
+    print("Getting state from screen")
+
+    if pyautogui.locateOnScreen("./fightOn.PNG"):
+        return "normal"
+    elif pyautogui.locateOnScreen("./monsterBattle.PNG"):
+        return "mainMenu"
+    else:
+        print("Couldn't determine battle state")
 
 #==============================================================================#
 #    LOAD BATTLE
@@ -129,6 +154,7 @@ def loadBattle(state, venueIndex, buttonLocsDict):
         #conveniently in the same location
         buttonLoc = buttonLocsDict["fightOnButtonLoc"] or pyautogui.locateOnScreen("./fightOn.PNG")
         buttonCenterX, buttonCenterY = pyautogui.center(buttonLoc)
+        print("debug", buttonCenterX, buttonCenterY)
         pyautogui.click(buttonCenterX, buttonCenterY)
 
     elif state == "lowHp": 
@@ -160,9 +186,13 @@ def createDragons(configDragons, buttonLocsDict):
     """
     dragonList = []
     dragonHPLocs = []
-    for loc in pyautogui.locateAllOnScreen("unitFullHP.png", 
-        region = buttonLocsDict["lowerLeftQuad"]):
-        dragonHPLocs.append(loc) #A set of coords describing unit HP bar position
+
+    loc = pyautogui.locateOnScreen("./ready.png")
+    if loc:
+        dragonHPLocs.append((loc[0]-220, loc[1], 203, 17))
+
+    for loc in pyautogui.locateAllOnScreen("./notReady.png"):
+        dragonHPLocs.append((loc[0]-220, loc[1], 203, 17))
 
     #Sort dragonHPLocs by height, and assign index from top to bottom
     dragonHPLocs.sort(key=operator.itemgetter(1))

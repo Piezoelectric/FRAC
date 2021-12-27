@@ -1,13 +1,7 @@
-import Menu
-import pyautogui
-
 # Implements various battle logic modules.
 
-class BattleLogic:
-    def __init__(self, dragonList):
-        self.dragonList = dragonList
-
-    def determineAction(self, readyDragonIndex):
+class BattleLogic: #Abstract class don't use it etc
+    def determineAction(self, readyDragon):
         '''
         Based on current battle conditions, returns a string that should be keypressed.
         '''
@@ -24,18 +18,18 @@ class BattleLogic:
         Do we care about the foe list.
         '''
         return False
-
-    def setFoeList(self, foeList):
-        self.foeList = foeList
+    
+    def checkIfDragonsWeak(self, dragonList):
+        for d in self.dragonList:
+            if d.isHpLow():
+                return True
+        return False
 
 class SpamLogic(BattleLogic):
-    def __init__(self, dragonList):
-        super().__init__(dragonList)
 
-    def determineAction(self, readyDragonIndex):
-        d = self.dragonList[readyDragonIndex]
-        if readyDragonIndex > -1 and d.isElimReady():
-            return "a..%s..qwer"%d.elimKey
+    def determineAction(self, readyDragon, dragonList = None, foeStatusList=None):
+        if readyDragon and readyDragon.isElimReady():
+            return "a..%s..qwer"%readyDragon.elimKey
         else:
             return "a..e..qwer"
     
@@ -46,25 +40,24 @@ class SpamLogic(BattleLogic):
         return False
 
 # TODO - fix this class. Something, SOMEWHERE, broke. Eugh.
-class BasicEliminateTrainerLogic(BattleLogic):
+class EliminateTrainerLogic(BattleLogic):
 
-    def __init__(self, dragonList):
-        super().__init__(dragonList)
+    def determineAction(self, readyDragon, dragonList, foeStatusList):
+        if self.checkIfDragonsWeak():
+            return ["f5"]
 
-    def determineAction(self, readyDragonIndex):
-        foeStatuses = Menu.checkFoes(self.foeList)
         try:
-            weakFoeIndex = foeStatuses.index("Weak")
+            weakFoeIndex = foeStatusList.index("Weak")
         except ValueError:
             weakFoeIndex = None
         try:
-            aliveFoeIndex = foeStatuses.index("Healthy")
+            aliveFoeIndex = foeStatusList.index("Healthy")
         except ValueError:
             aliveFoeIndex = 0
-        print("debug", weakFoeIndex, aliveFoeIndex)
+        print("debugging ElimTrainer logic", weakFoeIndex, aliveFoeIndex)
 
         #If elim is ready and a weak foe exists, eliminate that foe
-        d = self.dragonList[readyDragonIndex]
+        d = readyDragon
         if d.isElimReady() == True and weakFoeIndex:
             f = self.foeList[weakFoeIndex]
             print("Sending Eliminate to foe: " + f.posKey)
@@ -83,6 +76,16 @@ class BasicEliminateTrainerLogic(BattleLogic):
     
         return keyString
     
+    def checkIfDragonsWeak(self, dragonList):
+        grinderCount = len([d for d in dragonList if d.role != "trainee"])
+        weakCount = 0
+        
+        for d in self.dragonList:
+            if d.role == "grinder" and d.isHpLow():
+                weakCount+=1
+
+        return(weakCount >= grinderCount)
+
     def careAboutDragonReady(self):
         return True
 

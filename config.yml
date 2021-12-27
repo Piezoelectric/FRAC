@@ -1,0 +1,17 @@
+- dragons:
+    - dragon1:
+        role: grinder
+        scratch: e
+        eliminate: s
+    - dragon2:
+        role: grinder
+        scratch: e
+        eliminate: s
+    - dragon3:
+        role: grinder
+        scratch: e
+        eliminate: s
+- captchaLogging: true
+- fastMode: true
+- numBattlesDefault: 50
+- battleLogic: SpamLogic

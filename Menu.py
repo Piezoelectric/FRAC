@@ -32,7 +32,7 @@ def extrapolateButtonLocs(venueIndex = 0):
     buttonLocsDict = {}
 
     #From the focus, obtain the coliseum canvas/region of interest
-    buttonLocsDict["monsterBattleButtonLoc"] = pyautogui.locateOnScreen("monsterBattle.png", minSearchTime = 20)
+    buttonLocsDict["monsterBattleButtonLoc"] = pyautogui.locateOnScreen("./monsterBattle.PNG", minSearchTime = 20)
     focus = buttonLocsDict["monsterBattleButtonLoc"]
     canvasLoc = (focus[0]-100, focus[1]-375, 800, 600)
     buttonLocsDict["canvasLoc"] = canvasLoc

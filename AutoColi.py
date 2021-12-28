@@ -2,6 +2,13 @@ import pyautogui
 import time
 from Battle import *
 from Game import Game
+from yaml import load
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
+import sys
+import re
 
 # from PIL import ImageFont
 # from PIL import Image
@@ -44,36 +51,41 @@ def logCaptcha(coord):
     print("[CAPTCHA] saved, proceeding")
 
 def parse_args(args_line):
-    configDragons = [
-        ["grinder", "s"],
-        ["grinder", "s"],
-        ["grinder", "s"] 
-        ]
+    args_pattern = re.compile(
+        r"""^(
+            \s*(--numBattles)?\s*(?P<numBattles>\d*)?
+            \s*(--venueIndex)\s*(?P<venueIndex>\d*)
+        \s*)$""",
+        re.VERBOSE
+    )
 
-    numBattles = 5
-    venueIndex = 11
+    args = {
+        'numBattles': 0
+    }
+    match_object = args_pattern.match(args_line)
+    if match_object:
+        args = {k: v for k, v in match_object.groupdict().items()
+                if v is not None}
+    return args
 
-    battleLogicModule = SpamLogic()
-
-    #Use coordinate math instead of fullscreen search
-    fastMode = True
-
-    #Enable to save captchas (require fastmode)
-    captchaLogging = True
-
-    elimThreshold = 1
-
-    return numBattles, configDragons, venueIndex, battleLogicModule, fastMode, elimThreshold, captchaLogging
-
+def selectLogicModule(bl):
+    if bl == 'SpamLogic':
+        return SpamLogic()
+    elif bl == 'EliminateTrainerLogic':
+        return EliminateTrainerLogic()
+    else:
+        print("Unrecognized battle logic %s, quitting"%bl)
+        sys.exit()
+    
 def main(numBattles, configDragons, venueIndex, battleLogicModule, fastMode=True, elimThreshold=1, captchaLogging=False):
     game = Game(configDragons, venueIndex, battleLogicModule, fastMode, elimThreshold)
-    # The initialization also calls getStateFromScreen automatically. Wowie
+    # The initialization also calls getStateFromScreen automatically
         
     for i in range(1,numBattles+1):
         print("Loading battle %s with state %s"%(i,game.state))
         
         if not game.loadBattle():
-            break #The game couldn't load the battle correctly
+            break #The game couldn't load the battle correctly; exit the for-loop
 
         time.sleep(2) #may need to wait for the battle to load in
 
@@ -91,22 +103,51 @@ def main(numBattles, configDragons, venueIndex, battleLogicModule, fastMode=True
         print("Begin Battle [%s]"%i)
         print("Number of dragons: %s"%len(game.dragonList))
         print("Number of foes: %s"%(len(game.foeList) if game.foeList else "who cares"))
-        game.battleLoop(i)
+        game.state = game.battleLoop(i)
         # battleLoop contains an infinite While loop that will break on its own, returning to the main for-loop
 
     print("All battles done")
 
 
 # TODO LIST
-# - Refactor to read all config from a config.yml file
-# - Fix the broken BasicEliminateTrainerLogic to be less, uh, broken
+# [DONE] Refactor to read all config from a config.yml file
+# - Fix the broken EliminateTrainerLogic to be less, uh, broken
 # [DONE] a main() function and if name == __main__ 
+# - SOMEWHERE there is a bug with isElimReady() or something. Need to debug that.
 
 if __name__ == '__main__':
     # Get configs from command line
 
     # Get configs from YML
     #[role, eliminate hotkey if applicable]
-    numBattles, configDragons, venueIndex, battleLogicModule, fastMode, elimThreshold, captchaLogging = parse_args('')
+    arg_line = " ".join(sys.argv[1:])
+    args = parse_args(arg_line)
+
+    data = load(open("config.yml", 'r'), Loader=Loader)
+
+    if args['numBattles']:
+        numBattles = int(args['numBattles'])
+    elif data['numBattlesDefault']:
+        numBattles = int(data['numBattlesDefault'])
+    else:
+        numBattles = 5
+
+    if 'venueIndex' not in args.keys():
+        print("Please specify the venue to battle in using --venueIndex ##")
+        print("e.g. Training Fields would be --venueIndex 0")
+        sys.exit()
+    venueIndex = int(args['venueIndex']) #should be from command line
+
+    configDragons = [x['dragonInfo'] for x in data['dragons']]
+
+    battleLogicModule = selectLogicModule(data['battleLogic'])
+    
+    #Use coordinate math instead of fullscreen search
+    fastMode = data['fastMode'] or True
+
+    #Enable to save captchas (requires fastmode...I think?)
+    captchaLogging = data['captchaLogging'] or False
+
+    elimThreshold = data['eliminateThreshold'] or 0.33
 
     main(numBattles, configDragons, venueIndex, battleLogicModule, fastMode, elimThreshold, captchaLogging)

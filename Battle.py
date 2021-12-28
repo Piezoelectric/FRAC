@@ -81,7 +81,7 @@ class EliminateTrainerLogic(BattleLogic):
         weakCount = 0
         
         for d in self.dragonList:
-            if d.role == "grinder" and d.isHpLow():
+            if d.role != "trainee" and d.isHpLow():
                 weakCount+=1
 
         return(weakCount >= grinderCount)

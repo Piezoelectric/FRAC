@@ -225,8 +225,8 @@ class Game:
     
             dragonList.append(Dragon(hpLoc = hpLoc,
                                     mpLoc = mpLoc,
-                                    role = self.configDragons[i][0],
-                                    elimKey = self.configDragons[i][1]))
+                                    role = self.configDragons[i]['role'],
+                                    elimKey = self.configDragons[i]['eliminate']))
         return dragonList
     
     def __createFoes(self):
@@ -313,7 +313,7 @@ class Game:
             print("keyString to be pressed", keyString)
             if keyString == ["f5"]:
                 pyautogui.press(keyString) 
-                self.state = "mainMenu"
+                return "mainMenu"
             else:
                 pyautogui.typewrite(keyString, interval = 0.1)
 
